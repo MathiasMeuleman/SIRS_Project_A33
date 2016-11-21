@@ -1,12 +1,24 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
+import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESKeyGenerator;
+import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.GenericKeyStore;
+
+import javax.crypto.SecretKey;
 
 /**
  * Created by Alex Anders on 18/11/2016.
  */
 public class Main {
-    public static void main(String argv[]) {
+    public static void main(String argv[]) throws Exception {
+//        AESKeyGenerator gen = new AESKeyGenerator();
+//        SecretKey key = gen.generateKey();
+//        System.out.println(key.getEncoded());
+//        GenericKeyStore store = new GenericKeyStore();
+//        store.storeKey(key, "key1");
+//        SecretKey key2 = store.loadKey("key1");
+//        System.out.println(key2.getEncoded());
+
         try {
             String mode = "USE_SKIP_DH_PARAMS";
 
