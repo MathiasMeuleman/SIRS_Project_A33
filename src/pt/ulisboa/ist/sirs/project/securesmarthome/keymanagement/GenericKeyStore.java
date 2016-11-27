@@ -1,13 +1,9 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement;
 
 import javax.crypto.SecretKey;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.KeyStore;
-import java.security.KeyStore.*;
-import java.security.KeyStoreException;
+import java.io.*;
+import java.security.*;
+import java.security.cert.*;
 
 
 /**
@@ -21,22 +17,36 @@ public class GenericKeyStore {
 
     public GenericKeyStore() {
         try {
-            store = KeyStore.getInstance(KeyStore.getDefaultType());
+            store = KeyStore.getInstance("JCEKS");
+            store.load(null, null);
         } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void storeKey(SecretKey key, String alias) throws Exception {
+    public void storeKey(Key key, String alias) throws Exception {
         OutputStream stream = new FileOutputStream(keystorePath);
-        System.out.println(store);
-        store.setEntry(alias, new SecretKeyEntry(key), null);
+        store.setKeyEntry(alias, key, password.toCharArray(), null);
         store.store(stream, password.toCharArray());
+        stream.close();
     }
 
     public SecretKey loadKey(String alias) throws Exception {
         InputStream stream = new FileInputStream(keystorePath);
         store.load(stream, password.toCharArray());
-        return ((SecretKeyEntry)store.getEntry(alias, null)).getSecretKey();
+        stream.close();
+        Key key = store.getKey(alias, password.toCharArray());
+        if(key instanceof SecretKey) {
+            return (SecretKey) key;
+        } else {
+            System.out.println("Key is not a SecretKey");
+            throw new ClassCastException();
+        }
     }
 }
