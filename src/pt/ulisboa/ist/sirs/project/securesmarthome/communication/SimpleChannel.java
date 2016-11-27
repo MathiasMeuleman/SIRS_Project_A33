@@ -6,7 +6,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.communication;
 public class SimpleChannel implements CommunicationChannel {
 
     @Override
-    public void sendMessage(String string) {
+    public void sendMessage(String dest, String string) {
         message = new String(string);
     }
 
