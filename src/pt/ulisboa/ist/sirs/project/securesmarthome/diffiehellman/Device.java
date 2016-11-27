@@ -16,7 +16,7 @@ public class Device {
         keyAgree = new DHKeyAgreement2();
         communicationChannel = commChannel;
         role = dhRole;
-        status = new START;
+        status = START;
     }
 
     public void dhKeyAgreement(String argv, CommunicationChannel commChannelObject) {

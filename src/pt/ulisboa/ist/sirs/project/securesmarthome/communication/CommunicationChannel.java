@@ -5,7 +5,11 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.communication;
  */
 public interface CommunicationChannel {
 
-    void sendMessage(String dest, String string);
+    void sendMessage(String dest, String messages);
+    void sendMessage(String dest, byte[] messages);
 
     String receiveMessage();
+    byte[] receiveByteArray();
+
+    int getPort();
 }
