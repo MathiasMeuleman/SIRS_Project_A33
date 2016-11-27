@@ -40,6 +40,7 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 import javax.crypto.interfaces.*;
 import com.sun.crypto.provider.SunJCE;
+import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 
 /**
  * This program executes the Diffie-Hellman key agreement protocol
@@ -55,7 +56,7 @@ public class DHKeyAgreement2 {
 
     public DHKeyAgreement2() {}
 
-    public void run(String mode) throws Exception {
+    public byte[] getPubKeyEncAlice(String mode) throws Exception {
 
         DHParameterSpec dhSkipParamSpec;
 
@@ -67,7 +68,7 @@ public class DHKeyAgreement2 {
                     = AlgorithmParameterGenerator.getInstance("DH");
             paramGen.init(512);
             AlgorithmParameters params = paramGen.generateParameters();
-            dhSkipParamSpec = (DHParameterSpec)params.getParameterSpec
+            dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec
                     (DHParameterSpec.class);
         } else {
             // use some pre-generated, default DH parameters
@@ -87,11 +88,16 @@ public class DHKeyAgreement2 {
 
         // Alice creates and initializes her DH KeyAgreement object
         System.out.println("ALICE: Initialization ...");
-        KeyAgreement aliceKeyAgree = KeyAgreement.getInstance("DH");
+        aliceKeyAgree = KeyAgreement.getInstance("DH");
         aliceKeyAgree.init(aliceKpair.getPrivate());
 
         // Alice encodes her public key, and sends it over to Bob.
         byte[] alicePubKeyEnc = aliceKpair.getPublic().getEncoded();
+        return alicePubKeyEnc;
+    }
+
+
+    public byte[] getPubKeyEncBob(byte[] pubKeyEncAlice) throws Exception {
 
         /*
          * Let's turn over to Bob. Bob has received Alice's public key
@@ -99,16 +105,16 @@ public class DHKeyAgreement2 {
          * He instantiates a DH public key from the encoded key material.
          */
         KeyFactory bobKeyFac = KeyFactory.getInstance("DH");
-        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec
-                (alicePubKeyEnc);
-        PublicKey alicePubKey = bobKeyFac.generatePublic(x509KeySpec);
+        x509KeySpec = new X509EncodedKeySpec
+                (pubKeyEncAlice);
+        alicePubKey = bobKeyFac.generatePublic(x509KeySpec);
 
         /*
          * Bob gets the DH parameters associated with Alice's public key.
          * He must use the same parameters when he generates his own key
          * pair.
          */
-        DHParameterSpec dhParamSpec = ((DHPublicKey)alicePubKey).getParams();
+        DHParameterSpec dhParamSpec = ((DHPublicKey) alicePubKey).getParams();
 
         // Bob creates his own DH key pair
         System.out.println("BOB: Generate DH keypair ...");
@@ -118,12 +124,15 @@ public class DHKeyAgreement2 {
 
         // Bob creates and initializes his DH KeyAgreement object
         System.out.println("BOB: Initialization ...");
-        KeyAgreement bobKeyAgree = KeyAgreement.getInstance("DH");
+        bobKeyAgree = KeyAgreement.getInstance("DH");
         bobKeyAgree.init(bobKpair.getPrivate());
 
         // Bob encodes his public key, and sends it over to Alice.
         byte[] bobPubKeyEnc = bobKpair.getPublic().getEncoded();
+        return bobPubKeyEnc;
+    }
 
+    public void createSharedSecretAlice(byte[] bobPubKeyEnc) throws Exception {
         /*
          * Alice uses Bob's public key for the first (and only) phase
          * of her version of the DH
@@ -136,7 +145,10 @@ public class DHKeyAgreement2 {
         PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
         System.out.println("ALICE: Execute PHASE1 ...");
         aliceKeyAgree.doPhase(bobPubKey, true);
+        aliceSharedSecret = aliceKeyAgree.generateSecret();
+    }
 
+    public void createSharedSecretBob() throws Exception {
         /*
          * Bob uses Alice's public key for the first (and only) phase
          * of his version of the DH
@@ -144,158 +156,51 @@ public class DHKeyAgreement2 {
          */
         System.out.println("BOB: Execute PHASE1 ...");
         bobKeyAgree.doPhase(alicePubKey, true);
+        bobSharedSecret = bobKeyAgree.generateSecret();
+    }
 
-        /*
-         * At this stage, both Alice and Bob have completed the DH key
-         * agreement protocol.
-         * Both generate the (same) shared secret.
-         */
-        byte[] aliceSharedSecret = aliceKeyAgree.generateSecret();
-        int aliceLen = aliceSharedSecret.length;
-
-        byte[] bobSharedSecret = new byte[aliceLen];
-        int bobLen;
-        try {
-            // show example of what happens if you
-            // provide an output buffer that is too short
-            bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 1);
-        } catch (ShortBufferException e) {
-            System.out.println(e.getMessage());
+    public byte[] getSharedSecret(DHRole role)
+    {
+        if (role == DHRole.ALICE)
+        {
+            return aliceSharedSecret;
         }
-        // provide output buffer of required size
-        bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 0);
-
-        System.out.println("Alice secret: " +
-                toHexString(aliceSharedSecret));
-        System.out.println("Bob secret: " +
-                toHexString(bobSharedSecret));
-
-        if (!java.util.Arrays.equals(aliceSharedSecret, bobSharedSecret))
-            throw new Exception("Shared secrets differ");
-        System.out.println("Shared secrets are the same");
-
-        /*
-         * Now let's return the shared secret as a SecretKey object
-         * and use it for encryption. First, we generate SecretKeys for the
-         * "DES" algorithm (based on the raw shared secret data) and
-         * then we use DES in ECB mode
-         * as the encryption algorithm. DES in ECB mode does not require any
-         * parameters.
-         *
-         * Then we use DES in CBC mode, which requires an initialization
-         * vector (IV) parameter. In CBC mode, you need to initialize the
-         * Cipher object with an IV, which can be supplied using the
-         * javax.crypto.spec.IvParameterSpec class. Note that you have to use
-         * the same IV for encryption and decryption: If you use a different
-         * IV for decryption than you used for encryption, decryption will
-         * fail.
-         *
-         * NOTE: If you do not specify an IV when you initialize the
-         * Cipher object for encryption, the underlying implementation
-         * will generate a random one, which you have to retrieve using the
-         * javax.crypto.Cipher.getParameters() method, which returns an
-         * instance of java.security.AlgorithmParameters. You need to transfer
-         * the contents of that object (e.g., in encoded format, obtained via
-         * the AlgorithmParameters.getEncoded() method) to the party who will
-         * do the decryption. When initializing the Cipher for decryption,
-         * the (reinstantiated) AlgorithmParameters object must be passed to
-         * the Cipher.init() method.
-         */
-        System.out.println("Return shared secret as SecretKey object ...");
-        // Bob
-        // NOTE: The call to bobKeyAgree.generateSecret above reset the key
-        // agreement object, so we call doPhase again prior to another
-        // generateSecret call
-        bobKeyAgree.doPhase(alicePubKey, true);
-        SecretKey bobDesKey = bobKeyAgree.generateSecret("DES");
-
-        // Alice
-        // NOTE: The call to aliceKeyAgree.generateSecret above reset the key
-        // agreement object, so we call doPhase again prior to another
-        // generateSecret call
-        aliceKeyAgree.doPhase(bobPubKey, true);
-        SecretKey aliceDesKey = aliceKeyAgree.generateSecret("DES");
-
-        /*
-         * Bob encrypts, using DES in ECB mode
-         */
-        Cipher bobCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-        bobCipher.init(Cipher.ENCRYPT_MODE, bobDesKey);
-
-        byte[] cleartext = "This is just an example".getBytes();
-        byte[] ciphertext = bobCipher.doFinal(cleartext);
-
-        /*
-         * Alice decrypts, using DES in ECB mode
-         */
-        Cipher aliceCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-        aliceCipher.init(Cipher.DECRYPT_MODE, aliceDesKey);
-        byte[] recovered = aliceCipher.doFinal(ciphertext);
-
-        if (!java.util.Arrays.equals(cleartext, recovered))
-            throw new Exception("DES in CBC mode recovered text is " +
-                    "different from cleartext");
-        System.out.println("DES in ECB mode recovered text is " +
-                "same as cleartext");
-
-        /*
-         * Bob encrypts, using DES in CBC mode
-         */
-        bobCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-        bobCipher.init(Cipher.ENCRYPT_MODE, bobDesKey);
-
-        cleartext = "This is just an example".getBytes();
-        ciphertext = bobCipher.doFinal(cleartext);
-        // Retrieve the parameter that was used, and transfer it to Alice in
-        // encoded format
-        byte[] encodedParams = bobCipher.getParameters().getEncoded();
-
-        /*
-         * Alice decrypts, using DES in CBC mode
-         */
-        // Instantiate AlgorithmParameters object from parameter encoding
-        // obtained from Bob
-        AlgorithmParameters params = AlgorithmParameters.getInstance("DES");
-        params.init(encodedParams);
-        aliceCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-        aliceCipher.init(Cipher.DECRYPT_MODE, aliceDesKey, params);
-        recovered = aliceCipher.doFinal(ciphertext);
-
-        if (!java.util.Arrays.equals(cleartext, recovered))
-            throw new Exception("DES in CBC mode recovered text is " +
-                    "different from cleartext");
-        System.out.println("DES in CBC mode recovered text is " +
-                "same as cleartext");
-    }
-
-    /*
-     * Converts a byte to hex digit and writes to the supplied buffer
-     */
-    private void byte2hex(byte b, StringBuffer buf) {
-        char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
-                '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-        int high = ((b & 0xf0) >> 4);
-        int low = (b & 0x0f);
-        buf.append(hexChars[high]);
-        buf.append(hexChars[low]);
-    }
-
-    /*
-     * Converts a byte array to hex string
-     */
-    private String toHexString(byte[] block) {
-        StringBuffer buf = new StringBuffer();
-
-        int len = block.length;
-
-        for (int i = 0; i < len; i++) {
-            byte2hex(block[i], buf);
-            if (i < len-1) {
-                buf.append(":");
-            }
+        if (role == DHRole.BOB)
+        {
+            return bobSharedSecret;
         }
-        return buf.toString();
+        return null;
     }
+
+//        /*
+//         * At this stage, both Alice and Bob have completed the DH key
+//         * agreement protocol.
+//         * Both generate the (same) shared secret.
+//         */
+//        byte[] aliceSharedSecret = aliceKeyAgree.generateSecret();
+//        int aliceLen = aliceSharedSecret.length;
+//
+//        byte[] bobSharedSecret = new byte[aliceLen];
+//        int bobLen;
+//        try {
+//            // show example of what happens if you
+//            // provide an output buffer that is too short
+//            bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 1);
+//        } catch (ShortBufferException e) {
+//            System.out.println(e.getMessage());
+//        }
+//        // provide output buffer of required size
+//        bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 0);
+//
+//        System.out.println("Alice secret: " +
+//                Helper.toHexString(aliceSharedSecret));
+//        System.out.println("Bob secret: " +
+//                Helper.toHexString(bobSharedSecret));
+//
+//        if (!java.util.Arrays.equals(aliceSharedSecret, bobSharedSecret))
+//            throw new Exception("Shared secrets differ");
+//        System.out.println("Shared secrets are the same");
+//    }
 
     /*
      * Prints the usage of this test.
@@ -347,4 +252,11 @@ public class DHKeyAgreement2 {
 
     // The base used with the SKIP 1024 bit modulus
     private static final BigInteger skip1024Base = BigInteger.valueOf(2);
+
+    private KeyAgreement aliceKeyAgree;
+    private KeyAgreement bobKeyAgree;
+    private X509EncodedKeySpec x509KeySpec;
+    private PublicKey alicePubKey;
+    private byte[] aliceSharedSecret;
+    private byte[] bobSharedSecret;
 }
