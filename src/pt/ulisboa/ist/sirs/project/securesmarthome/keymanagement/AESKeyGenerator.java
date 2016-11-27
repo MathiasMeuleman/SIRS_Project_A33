@@ -2,7 +2,9 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureClassLoader;
 
 /**
  * Created by Mathias on 2016-11-21.

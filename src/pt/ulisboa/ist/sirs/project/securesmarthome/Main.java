@@ -28,22 +28,13 @@ public class Main {
             throw new Exception("Wrong number of command options");
         }
 
-        if (args[0].equals("gateway")){
+        if (args[0].equals("gateway")) {
             Device gateway = new Device();
 //            gateway.dhKeyAgreement(args[1], simpleChannel);
         }
-        if (args[0].equals("smartHomeDevice")){
+        if (args[0].equals("smartHomeDevice")) {
             Device smartHomeDevice = new Device();
 //            smartHomeDevice.dhKeyAgreement(args[1], simpleChannel);
         }
-
-
-
-
-
-
-
     }
-
-
 }
