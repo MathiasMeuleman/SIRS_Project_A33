@@ -30,11 +30,11 @@ public class Main {
 
         if (args[0].equals("gateway")) {
             Device gateway = new Device();
-//            gateway.dhKeyAgreement(args[1], simpleChannel);
+            gateway.dhKeyAgreement(args[1], simpleChannel);
         }
         if (args[0].equals("smartHomeDevice")) {
             Device smartHomeDevice = new Device();
-//            smartHomeDevice.dhKeyAgreement(args[1], simpleChannel);
+            smartHomeDevice.dhKeyAgreement(args[1], simpleChannel);
         }
     }
 }
