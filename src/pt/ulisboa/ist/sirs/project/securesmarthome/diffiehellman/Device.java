@@ -11,12 +11,12 @@ import static pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHStatus
  */
 public class Device {
 
-    public void Device(CommunicationChannel commChannel, DHRole dhRole)
+    public Device(CommunicationChannel commChannel, DHRole dhRole)
     {
         keyAgree = new DHKeyAgreement2();
         communicationChannel = commChannel;
         role = dhRole;
-        status = new START;
+        status = DHStatus.START;
     }
 
     public void dhKeyAgreement(String argv, CommunicationChannel commChannelObject) {
@@ -26,7 +26,7 @@ public class Device {
                 try {
                     String mode = "USE_SKIP_DH_PARAMS";
 
-                    if (argv == null) {
+                    if (argv != null) {
                         if (!(argv.equals("-gen"))) {
                             keyAgree.usage();
                             throw new Exception("Unrecognized flag: " + argv);
@@ -39,7 +39,7 @@ public class Device {
                         // generating pubKeyEncAlice
                         byte[] pubKeyEnc = keyAgree.getPubKeyEncAlice(mode);
                         // sending the pubKeyEnc to Bob
-                        commChannelObject.sendMessage(pubKeyEnc.toString());
+                        commChannelObject.sendMessage(pubKeyEnc);
                         // change state
                         status = PUBKEYEXCHANGED;
                     }
@@ -51,7 +51,7 @@ public class Device {
                         // generating pubKeyEncBob
                         byte[] pubKeyEncBob = keyAgree.getPubKeyEncBob(pubKeyEncAlice);
                         // sending pubKeyEncBob to Alice
-                        commChannelObject.sendMessage(pubKeyEncBob.toString());
+                        commChannelObject.sendMessage(pubKeyEncBob);
                         // create shared secret
                         keyAgree.createSharedSecretBob();
                         // change state

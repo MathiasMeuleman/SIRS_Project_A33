@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SimpleChannel;
+import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHRole;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESKeyGenerator;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.GenericKeyStore;
 
@@ -29,11 +30,11 @@ public class Main {
         }
 
         if (args[0].equals("gateway")) {
-            Device gateway = new Device();
+            Device gateway = new Device(simpleChannel, DHRole.BOB);
             gateway.dhKeyAgreement(args[1], simpleChannel);
         }
         if (args[0].equals("smartHomeDevice")) {
-            Device smartHomeDevice = new Device();
+            Device smartHomeDevice = new Device(simpleChannel, DHRole.ALICE);
             smartHomeDevice.dhKeyAgreement(args[1], simpleChannel);
         }
     }
