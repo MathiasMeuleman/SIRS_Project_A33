@@ -12,14 +12,12 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Device;
  */
 public class Gateway extends Device{
 
-    private CommunicationChannel channel;
-
-    public Gateway(DHRole dhRole) {
-        super(dhRole);
-        setCommunicationChannel();
+    public Gateway(CommunicationMode commMode) {
+        super(commMode);
+//        setCommunicationChannel();
     }
 
     public void setCommunicationChannel() {
-        channel = new SocketChannel(CommunicationMode.GATEWAY);
+        commChannel = new SocketChannel(CommunicationMode.GATEWAY);
     }
 }

@@ -12,15 +12,12 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Device;
  */
 public class SmartHomeDevice extends Device{
 
-    private CommunicationChannel channel;
-
-    public SmartHomeDevice(DHRole dhRole) {
-        super(dhRole);
-        setCommunicationChannel();
+    public SmartHomeDevice(CommunicationMode commMode) {
+        super(commMode);
+//        setCommunicationChannel();
     }
 
     public void setCommunicationChannel() {
-        this.channel = new SocketChannel(CommunicationMode.SHD);
-
+        commChannel = new SocketChannel(CommunicationMode.SHD);
     }
 }
