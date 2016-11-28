@@ -1,8 +1,9 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
+import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 
 import static pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHStatus.PUBKEYEXCHANGED;
 import static pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHStatus.SHAREDKEYGENERATED;

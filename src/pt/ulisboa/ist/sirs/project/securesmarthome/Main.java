@@ -1,13 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHRole;
 import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
-import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESKeyGenerator;
-import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.GenericKeyStore;
 
-import javax.crypto.SecretKey;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Device;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SmartHomeDevice;
 
 /**

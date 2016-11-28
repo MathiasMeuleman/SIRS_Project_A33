@@ -1,10 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHRole;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Device;
+import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
 
 
 /**
