@@ -11,15 +11,14 @@ import static pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHStatus
  */
 public class Device {
 
-    public Device(CommunicationChannel commChannel, DHRole dhRole)
+    public Device(DHRole dhRole)
     {
         keyAgree = new DHKeyAgreement2();
-        communicationChannel = commChannel;
         role = dhRole;
         status = DHStatus.START;
     }
 
-    public void dhKeyAgreement(String argv, CommunicationChannel commChannelObject) {
+    public void dhKeyAgreement(String argv, CommunicationChannel commChannelObject, String ipPortDest) {
 
         switch (status) {
             case START: {
@@ -39,7 +38,7 @@ public class Device {
                         // generating pubKeyEncAlice
                         byte[] pubKeyEnc = keyAgree.getPubKeyEncAlice(mode);
                         // sending the pubKeyEnc to Bob
-                        commChannelObject.sendMessage(pubKeyEnc);
+                        commChannelObject.sendMessage(ipPortDest, pubKeyEnc);
                         // change state
                         status = PUBKEYEXCHANGED;
                     }
@@ -51,7 +50,7 @@ public class Device {
                         // generating pubKeyEncBob
                         byte[] pubKeyEncBob = keyAgree.getPubKeyEncBob(pubKeyEncAlice);
                         // sending pubKeyEncBob to Alice
-                        commChannelObject.sendMessage(pubKeyEncBob);
+                        commChannelObject.sendMessage(ipPortDest, pubKeyEncBob);
                         // create shared secret
                         keyAgree.createSharedSecretBob();
                         // change state
@@ -95,7 +94,6 @@ public class Device {
     }
 
     private DHKeyAgreement2 keyAgree;
-    private CommunicationChannel communicationChannel;
     private DHRole role;
     private DHStatus status;
     private byte[] sharedSecret;
