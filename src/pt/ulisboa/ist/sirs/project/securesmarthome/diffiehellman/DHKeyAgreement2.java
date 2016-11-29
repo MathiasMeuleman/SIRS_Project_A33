@@ -81,6 +81,7 @@ public class DHKeyAgreement2 {
                             // generating pubKeyEncAlice
                             byte[] pubKeyEnc = getPubKeyEncAlice(paramsMode);
                             // sending the pubKeyEnc to Bob
+                            System.out.println("DHKeyAgreement.pubKeyEncAlice: " + pubKeyEnc);
                             commChannel.sendMessage(ipPortDest, pubKeyEnc);
                             // change state
                             status = PUBKEYEXCHANGED;
@@ -90,6 +91,7 @@ public class DHKeyAgreement2 {
                         if (commMode == CommunicationMode.GATEWAY) {
                             // receiving the pubKeyEnc of Alice
                             byte[] pubKeyEncAlice = commChannel.receiveByteArray();
+                            System.out.println("DHKeyAgreement.pubKeyEncAlice: " + pubKeyEncAlice);
                             // generating pubKeyEncBob
                             byte[] pubKeyEncBob = getPubKeyEncBob(pubKeyEncAlice);
                             // sending pubKeyEncBob to Alice
@@ -124,9 +126,9 @@ public class DHKeyAgreement2 {
                 }
                 case SHAREDKEYGENERATED: {
                     try {
-                        sharedSecret = getSharedSecret();
-                        if (sharedSecret == null)
-                            System.out.println("Failure! DHRole is invalid");
+                        sharedSecretKey = getSharedSecretKey();
+                        if (sharedSecretKey == null)
+                            System.out.println("No shared key available!");
                     }
                     catch (Exception e) {
                         System.err.println("Error: " + e);
@@ -225,7 +227,7 @@ public class DHKeyAgreement2 {
         PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
         System.out.println("ALICE: Execute PHASE1 ...");
         aliceKeyAgree.doPhase(bobPubKey, true);
-        sharedSecret = aliceKeyAgree.generateSecret();
+        sharedSecretKey = aliceKeyAgree.generateSecret("AES");
     }
 
     public void createSharedSecretBob() throws Exception {
@@ -236,12 +238,12 @@ public class DHKeyAgreement2 {
          */
         System.out.println("BOB: Execute PHASE1 ...");
         bobKeyAgree.doPhase(alicePubKey, true);
-        sharedSecret = bobKeyAgree.generateSecret();
+        sharedSecretKey = bobKeyAgree.generateSecret("AES");
     }
 
-    public byte[] getSharedSecret()
+    public SecretKey getSharedSecretKey()
     {
-            return sharedSecret;
+            return sharedSecretKey;
     }
 
 //        /*
@@ -330,5 +332,5 @@ public class DHKeyAgreement2 {
     private X509EncodedKeySpec x509KeySpec;
     private PublicKey alicePubKey;
     private DHStatus status;
-    private byte[] sharedSecret;
+    private SecretKey sharedSecretKey;
 }

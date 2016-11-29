@@ -3,6 +3,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
+import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Authentication;
 
 
 /**
@@ -10,9 +11,13 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
  */
 public class Gateway extends Device{
 
-    public Gateway(CommunicationMode commMode) {
+    public Gateway(CommunicationMode commMode, byte[] key) {
         super(commMode);
-//        setCommunicationChannel();
+        aprioriSharedKey = key;
+
+        // authentication part
+        authenticationMessageEncrypted = Authentication.getConcatPubKeyBAEncrypted(
+                aprioriSharedKey, pubKeyEncA, pubKeyEncB);
     }
 
     public void setCommunicationChannel() {

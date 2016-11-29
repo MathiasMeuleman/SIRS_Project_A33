@@ -77,6 +77,7 @@ public class SocketChannel implements CommunicationChannel {
             outStream = new DataOutputStream((clientSocket.getOutputStream()));
 //            outStream.writeChar('b');
             outStream.writeInt(message.length);
+            System.out.println("SocketChannel.message: " + message);
             outStream.write(message);
             outStream.close();
             clientSocket.close();
@@ -136,6 +137,7 @@ public class SocketChannel implements CommunicationChannel {
             int size = inStream.read();
             byte[] message = new byte[size];
             inStream.readFully(message);
+            System.out.println("SocketChannel.receivedMessage: " + message);
             inStream.close();
             clientSocket.close();
             return message;
