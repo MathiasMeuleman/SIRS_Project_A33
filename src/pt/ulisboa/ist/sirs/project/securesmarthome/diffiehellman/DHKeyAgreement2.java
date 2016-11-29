@@ -41,6 +41,11 @@ import javax.crypto.spec.*;
 import javax.crypto.interfaces.*;
 import com.sun.crypto.provider.SunJCE;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
+import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
+import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
+
+import static pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHStatus.PUBKEYEXCHANGED;
+import static pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHStatus.SHAREDKEYGENERATED;
 
 /**
  * This program executes the Diffie-Hellman key agreement protocol
@@ -54,7 +59,82 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 
 public class DHKeyAgreement2 {
 
-    public DHKeyAgreement2() {}
+    public DHKeyAgreement2(String argv, CommunicationMode commMode, CommunicationChannel commChannel, String ipPortDest) {
+
+        status = DHStatus.START;
+
+            switch (status) {
+                case START: {
+                    try {
+                        String paramsMode = "USE_SKIP_DH_PARAMS";
+
+                        if (argv != null) {
+                            if (!(argv.equals("-gen"))) {
+                                usage();
+                                throw new Exception("Unrecognized flag: " + argv);
+                            }
+                            paramsMode = "GENERATE_DH_PARAMS";
+                        }
+
+                        // if the device is an SHD
+                        if (commMode == CommunicationMode.SHD) {
+                            // generating pubKeyEncAlice
+                            byte[] pubKeyEnc = getPubKeyEncAlice(paramsMode);
+                            // sending the pubKeyEnc to Bob
+                            commChannel.sendMessage(ipPortDest, pubKeyEnc);
+                            // change state
+                            status = PUBKEYEXCHANGED;
+                        }
+
+                        // if the device is the gateway
+                        if (commMode == CommunicationMode.GATEWAY) {
+                            // receiving the pubKeyEnc of Alice
+                            byte[] pubKeyEncAlice = commChannel.receiveByteArray();
+                            // generating pubKeyEncBob
+                            byte[] pubKeyEncBob = getPubKeyEncBob(pubKeyEncAlice);
+                            // sending pubKeyEncBob to Alice
+                            commChannel.sendMessage(ipPortDest, pubKeyEncBob);
+                            // create shared secret
+                            createSharedSecretBob();
+                            // change state
+                            status = SHAREDKEYGENERATED;
+                        }
+                    }
+                    catch (Exception e) {
+                        System.err.println("Error: " + e);
+                        System.exit(1);
+                    }
+                }
+                case PUBKEYEXCHANGED: {
+                    try {
+                        if (commMode == CommunicationMode.SHD)
+                        {
+                            // receiving the pubKeyEnc of Bob
+                            byte [] pubKeyEncBob = commChannel.receiveByteArray();
+                            // create shared secret
+                            createSharedSecretAlice(pubKeyEncBob);
+                        }
+                    }
+                    catch (Exception e) {
+                        System.err.println("Error: " + e);
+                        System.exit(1);
+                    }
+                    // change state
+                    status = SHAREDKEYGENERATED;
+                }
+                case SHAREDKEYGENERATED: {
+                    try {
+                        sharedSecret = getSharedSecret();
+                        if (sharedSecret == null)
+                            System.out.println("Failure! DHRole is invalid");
+                    }
+                    catch (Exception e) {
+                        System.err.println("Error: " + e);
+                        System.exit(1);
+                    }
+                }
+            }
+        }
 
     public byte[] getPubKeyEncAlice(String mode) throws Exception {
 
@@ -145,7 +225,7 @@ public class DHKeyAgreement2 {
         PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
         System.out.println("ALICE: Execute PHASE1 ...");
         aliceKeyAgree.doPhase(bobPubKey, true);
-        aliceSharedSecret = aliceKeyAgree.generateSecret();
+        sharedSecret = aliceKeyAgree.generateSecret();
     }
 
     public void createSharedSecretBob() throws Exception {
@@ -156,20 +236,12 @@ public class DHKeyAgreement2 {
          */
         System.out.println("BOB: Execute PHASE1 ...");
         bobKeyAgree.doPhase(alicePubKey, true);
-        bobSharedSecret = bobKeyAgree.generateSecret();
+        sharedSecret = bobKeyAgree.generateSecret();
     }
 
-    public byte[] getSharedSecret(DHRole role)
+    public byte[] getSharedSecret()
     {
-        if (role == DHRole.ALICE)
-        {
-            return aliceSharedSecret;
-        }
-        if (role == DHRole.BOB)
-        {
-            return bobSharedSecret;
-        }
-        return null;
+            return sharedSecret;
     }
 
 //        /*
@@ -257,6 +329,6 @@ public class DHKeyAgreement2 {
     private KeyAgreement bobKeyAgree;
     private X509EncodedKeySpec x509KeySpec;
     private PublicKey alicePubKey;
-    private byte[] aliceSharedSecret;
-    private byte[] bobSharedSecret;
+    private DHStatus status;
+    private byte[] sharedSecret;
 }

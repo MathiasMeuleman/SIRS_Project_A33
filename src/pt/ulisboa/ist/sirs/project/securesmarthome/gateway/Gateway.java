@@ -1,9 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Device;
+import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
 
 
 /**
@@ -11,14 +10,12 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Device;
  */
 public class Gateway extends Device{
 
-    private CommunicationChannel channel;
-
-    public Gateway() {
-        setCommunicationChannel();
+    public Gateway(CommunicationMode commMode) {
+        super(commMode);
+//        setCommunicationChannel();
     }
 
     public void setCommunicationChannel() {
-        channel = new SocketChannel(CommunicationMode.GATEWAY);
+        commChannel = new SocketChannel(CommunicationMode.GATEWAY);
     }
-
 }
