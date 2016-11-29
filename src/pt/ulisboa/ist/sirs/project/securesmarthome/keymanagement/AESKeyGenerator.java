@@ -25,4 +25,14 @@ public class AESKeyGenerator {
     public SecretKey generateKey() {
         return generator.generateKey();
     }
+
+//    public Key read(String keyPath) throws GeneralSecurityException, IOException {
+//        System.out.println("Reading key from file " + keyPath + " ...");
+//        FileInputStream fis = new FileInputStream(keyPath);
+//        byte[] encoded = new byte[fis.available()];
+//        fis.read(encoded);
+//        fis.close();
+//
+//        return new SecretKeySpec(encoded, 0, 16, "AES");
+//    }
 }
