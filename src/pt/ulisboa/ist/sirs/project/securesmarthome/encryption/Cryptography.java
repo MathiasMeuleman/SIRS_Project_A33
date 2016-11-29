@@ -3,14 +3,12 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.encryption;
 /**
  * Created by maxwell on 11/28/16.
  */
-import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESKeyGenerator;
+import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyGenerator;
 
 import java.security.*;
-import java.security.spec.*;
 
 import java.io.*;
 import javax.crypto.*;
-import javax.crypto.spec.*;
 
 public class Cryptography {
 
@@ -22,7 +20,7 @@ public class Cryptography {
 public static void main(String args[]) {
     try {
         byte[] plaintext = {(byte) 0x30, (byte) 0x31, (byte) 0x32};
-        AESKeyGenerator keyGenerator = new AESKeyGenerator();
+        AESSecretKeyGenerator keyGenerator = new AESSecretKeyGenerator();
         SecretKey key = keyGenerator.generateKey();
         System.out.println("plaintext: " + new String(plaintext, "UTF8"));
         byte[] cryptogramm = encrypt(plaintext, key);
