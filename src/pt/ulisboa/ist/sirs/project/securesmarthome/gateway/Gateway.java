@@ -8,6 +8,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementG
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
+import javax.crypto.SecretKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,13 @@ public class Gateway extends Device{
     public Gateway(CommunicationMode commMode, String key) {
         super(commMode);
         smartHomeDevices = new ArrayList<>();
-        aprioriSharedKey = AESSecretKeyFactory.createSecretKey(key);
+        aprioriSharedKeysList = new ArrayList<>();
+    }
+
+    public void addSHDToSHS(String aprioriSharedKey, int indexOfSHD)
+    {
+        // add the new input key to the list for authentication
+        aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(aprioriSharedKey));
 
         dh = new DHKeyAgreementGateway();
         dhKeyAgreement();
@@ -29,7 +36,8 @@ public class Gateway extends Device{
         // receive authentication message from SHD
         authenticationMessageEncrypted = commChannel.receiveByteArray();
         // decrypt it
-        authenticationMessage = Cryptography.decrypt(authenticationMessageEncrypted,aprioriSharedKey);
+        authenticationMessage = Cryptography.decrypt(authenticationMessageEncrypted,
+                aprioriSharedKeysList.get(indexOfSHD));
         // compare with concatenated keys
         byte[] concatKeys = Helper.getConcatPubKeys(pubKeyEncA, pubKeyEncB);
         if (Arrays.equals(authenticationMessage, concatKeys)) {
@@ -38,7 +46,8 @@ public class Gateway extends Device{
             // generate authentication message
             authenticationMessage = Helper.getConcatPubKeys(pubKeyEncB, pubKeyEncA);
             // encrypt authentication message
-            authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage, aprioriSharedKey);
+            authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
+                    aprioriSharedKeysList.get(indexOfSHD));
             // authenticate by sending it to the other party
             commChannel.sendMessage(authenticationMessageEncrypted);
         }
@@ -49,5 +58,5 @@ public class Gateway extends Device{
     public void setCommunicationChannel() {
         commChannel = new SocketChannel(CommunicationMode.GATEWAY);
     }
-
+    private List<SecretKey> aprioriSharedKeysList;
 }
