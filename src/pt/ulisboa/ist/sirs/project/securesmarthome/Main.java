@@ -20,7 +20,6 @@ public class Main {
             }
             System.out.println("Initializing gateway");
             Gateway gateway = new Gateway(CommunicationMode.GATEWAY, args[1]);
-            System.out.println("Testing");
         }
 
         if (args[0].equals("smartHomeDevice")) {
