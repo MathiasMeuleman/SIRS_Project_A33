@@ -23,6 +23,8 @@ public class Gateway extends Device{
         super(commMode);
         smartHomeDevices = new ArrayList<>();
         aprioriSharedKeysList = new ArrayList<>();
+
+        addSHDToSHS(key, 0);
     }
 
     public void addSHDToSHS(String aprioriSharedKey, int indexOfSHD)
