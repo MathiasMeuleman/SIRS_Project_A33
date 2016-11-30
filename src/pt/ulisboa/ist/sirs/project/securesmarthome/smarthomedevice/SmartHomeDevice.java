@@ -22,6 +22,7 @@ public class SmartHomeDevice extends Device{
 
         dh = new DHKeyAgreementSHD();
         dhKeyAgreement();
+        System.out.println("Finished DH");
         // authentication part
         // generate authentication message
         authenticationMessage = Helper.getConcatPubKeys(pubKeyEncA, pubKeyEncB);

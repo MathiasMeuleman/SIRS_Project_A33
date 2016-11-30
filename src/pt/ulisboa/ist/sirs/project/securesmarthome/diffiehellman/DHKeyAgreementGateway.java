@@ -14,7 +14,7 @@ public class DHKeyAgreementGateway implements DHKeyAgreement {
             pubKeyEncA = commChannel.receiveByteArray();
             pubKeyEncB = DHKeyAgreement2.getPubKeyEncB(pubKeyEncA);
             // sending pubKey to other party
-            String dest = new String("localhost:" + commChannel.getPort());
+            String dest = new String("localhost:12005");
             commChannel.sendMessage(dest, pubKeyEncB);
             // create shared secret
             DHKeyAgreement2.createSharedSecretB(pubKeyEncA);

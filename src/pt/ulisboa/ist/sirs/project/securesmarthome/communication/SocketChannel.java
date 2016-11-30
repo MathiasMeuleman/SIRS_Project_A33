@@ -45,8 +45,9 @@ public class SocketChannel implements CommunicationChannel {
     }
 
     private void setupSmartHomeDevice() throws IOException {
-        serverSocket = new ServerSocket(0);
-        port = serverSocket.getLocalPort();
+        port = 12005;
+        serverSocket = new ServerSocket(port);
+//        port = serverSocket.getLocalPort();
     }
 
     private void setupUser() {

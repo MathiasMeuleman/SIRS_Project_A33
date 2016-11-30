@@ -7,6 +7,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyGen
 
 import java.security.*;
 import java.io.*;
+import java.util.Arrays;
 import javax.crypto.*;
 
 public class Cryptography {
@@ -50,7 +51,7 @@ public static void main(String args[]) {
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);
             c.init(Cipher.ENCRYPT_MODE, key);
             ciphertext = c.doFinal(plaintext);
-            System.out.println("Message encrypted : " + ciphertext);
+            System.out.println("Message encrypted : " + ciphertext.length + "   " + ciphertext);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,11 +60,10 @@ public static void main(String args[]) {
     }
 
     public static byte[] decrypt(byte[] ciphertext, Key key) {
-
+        System.out.println("Ciphertext: " + ciphertext.length + "   " + Arrays.toString(ciphertext));
         byte[] plaintext = null;
         try {
             System.out.println("Start decryption ...");
-            System.out.println("Encoded data = " + ciphertext);
 
     /* Create a Cipher object and initialize it with the secret key */
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);

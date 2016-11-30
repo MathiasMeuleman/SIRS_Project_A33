@@ -25,6 +25,7 @@ public class Gateway extends Device{
 
         dh = new DHKeyAgreementGateway();
         dhKeyAgreement();
+        System.out.println("Finished DH");
         // authentication part
         // receive authentication message from SHD
         authenticationMessageEncrypted = commChannel.receiveByteArray();
