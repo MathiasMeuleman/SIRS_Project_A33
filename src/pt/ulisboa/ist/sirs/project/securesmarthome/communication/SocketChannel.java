@@ -1,12 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.communication;
 
-import com.sun.corba.se.spi.orbutil.fsm.InputImpl;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.Buffer;
 
 /**
  * Created by Mathias on 2016-11-27.
@@ -84,6 +80,10 @@ public class SocketChannel implements CommunicationChannel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessage(byte[] message) {
+        sendMessage("localhost:" + String.valueOf(getPort()), message);
     }
 
     private void getSocket(String dest) throws IOException {

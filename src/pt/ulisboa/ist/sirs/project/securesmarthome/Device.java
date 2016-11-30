@@ -3,7 +3,6 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Authentication;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 
 import javax.crypto.SecretKey;
@@ -47,8 +46,7 @@ public class Device {
                 pubKeyEncA = commChannel.receiveByteArray();
                 pubKeyEncB = DHKeyAgreement2.getPubKeyEncB(pubKeyEncA);
                 // sending pubKey to other party
-                String dest = new String("localhost:" + commChannel.getPort());
-                commChannel.sendMessage(dest, pubKeyEncB);
+                commChannel.sendMessage(pubKeyEncB);
                 // create shared secret
                 DHKeyAgreement2.createSharedSecretB(pubKeyEncA);
             } catch (Exception e) {
@@ -66,4 +64,5 @@ public class Device {
     protected SecretKey dhSharedSecretKey;
     protected SecretKey aprioriSharedKey;
     protected byte[] authenticationMessageEncrypted;
+    protected byte[] authenticationMessage;
 }

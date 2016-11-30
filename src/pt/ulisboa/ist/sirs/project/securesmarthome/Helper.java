@@ -1,5 +1,9 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
+import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
+
+import javax.crypto.SecretKey;
+
 /**
  * Created by Alex Anders on 21/11/2016.
  */
@@ -31,5 +35,14 @@ public class Helper {
             }
         }
         return buf.toString();
+    }
+
+    public static byte[] getConcatPubKeys(byte[] pubKeyEncA, byte[] pubKeyEncB) {
+        // concatenating the public values
+        byte[] concatPubKeyAB = new byte[pubKeyEncA.length + pubKeyEncB.length];
+        System.arraycopy(pubKeyEncA, 0, concatPubKeyAB, 0, pubKeyEncA.length);
+        System.arraycopy(pubKeyEncB, 0, concatPubKeyAB, pubKeyEncA.length, pubKeyEncB.length);
+
+        return concatPubKeyAB;
     }
 }
