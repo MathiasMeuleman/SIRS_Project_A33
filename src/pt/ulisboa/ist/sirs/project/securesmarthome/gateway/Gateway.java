@@ -30,7 +30,7 @@ public class Gateway extends Device{
         // compare with concatenated keys
         byte[] concatKeys = Helper.getConcatPubKeys(pubKeyEncA, pubKeyEncB);
         if (Arrays.equals(authenticationMessage, concatKeys)) {
-            smartHomeDevices.add(new authenticatedSHD(true));
+            smartHomeDevices.add(new AuthenticatedSHD(true));
             // authenticate gateway
             // generate authentication message
             authenticationMessage = Helper.getConcatPubKeys(pubKeyEncB, pubKeyEncA);
@@ -40,12 +40,12 @@ public class Gateway extends Device{
             commChannel.sendMessage(authenticationMessageEncrypted);
         }
         else
-            smartHomeDevices.add(new authenticatedSHD(false));
+            smartHomeDevices.add(new AuthenticatedSHD(false));
     }
 
     public void setCommunicationChannel() {
         commChannel = new SocketChannel(CommunicationMode.GATEWAY);
     }
 
-    List<authenticatedSHD> smartHomeDevices;
+    List<AuthenticatedSHD> smartHomeDevices;
 }
