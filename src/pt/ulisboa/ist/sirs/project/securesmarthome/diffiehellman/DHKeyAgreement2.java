@@ -40,7 +40,6 @@ import javax.crypto.spec.DHParameterSpec;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 
 /**
  * This program executes the Diffie-Hellman key agreement protocol
@@ -54,7 +53,7 @@ import java.util.Arrays;
 
 public class DHKeyAgreement2 {
 
-    public static byte[] getPubKeyEncA(String argv) {
+    public static byte[] getPubKeyEncSHD(String argv) {
         try {
             String paramsMode = "USE_SKIP_DH_PARAMS";
 
@@ -76,7 +75,7 @@ public class DHKeyAgreement2 {
         }
     }
 
-    public static byte[] getPubKeyEncB(byte[] pubKeyEncAlice) {
+    public static byte[] getPubKeyEncGW(byte[] pubKeyEncAlice) {
         try {
             // generating pubKeyEncBob
             byte[] pubKeyEncB = getPubKeyEncBob(pubKeyEncAlice);
@@ -121,7 +120,7 @@ public class DHKeyAgreement2 {
         // Alice creates and initializes her DH KeyAgreement object
         System.out.println("ALICE: Initialization ...");
         aliceKeyAgree = KeyAgreement.getInstance("DH");
-        aliceKeyAgree.init(aliceKpair.getPrivate());
+        aliceKeyAgree.init(aliceKpair.getPrivate(), dhSkipParamSpec);
 
         // Alice encodes her public key, and sends it over to Bob.
         byte[] alicePubKeyEnc = aliceKpair.getPublic().getEncoded();

@@ -4,6 +4,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
+import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementGateway;
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
@@ -33,8 +34,13 @@ public class Gateway extends Device{
         aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(aprioriSharedKey));
 
         dh = new DHKeyAgreementGateway();
-        dhKeyAgreement();
+        receivePubKey();
+        pubEncryptedGatewayKey = DHKeyAgreement2.getPubKeyEncGW(pubEncryptedSHDKey);
+        sendPubKey();
+        dh.doDH(pubEncryptedSHDKey);
+        dhSharedSecretKey = DHKeyAgreement2.getSharedSecretKey();
         System.out.println("Finished DH");
+
         // authentication part
         // receive authentication message from SHD
         authenticationMessageEncrypted = commChannel.receiveByteArray();
@@ -42,12 +48,12 @@ public class Gateway extends Device{
         authenticationMessage = Cryptography.decrypt(authenticationMessageEncrypted,
                 aprioriSharedKeysList.get(indexOfSHD));
         // compare with concatenated keys
-        byte[] concatKeys = Helper.getConcatPubKeys(pubKeyEncA, pubKeyEncB);
+        byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
         if (Arrays.equals(authenticationMessage, concatKeys)) {
             smartHomeDevices.add(new AuthenticatedSHD(true));
             // authenticate gateway
             // generate authentication message
-            authenticationMessage = Helper.getConcatPubKeys(pubKeyEncB, pubKeyEncA);
+            authenticationMessage = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
             // encrypt authentication message
             authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
                     aprioriSharedKeysList.get(indexOfSHD));
@@ -57,6 +63,15 @@ public class Gateway extends Device{
         else
             smartHomeDevices.add(new AuthenticatedSHD(false));
     }
+
+    private void receivePubKey() {
+        pubEncryptedSHDKey = commChannel.receiveByteArray();
+    }
+
+    private void sendPubKey() {
+        commChannel.sendMessage("localhost:12005", pubEncryptedGatewayKey);
+    }
+
     private List<AuthenticatedSHD> smartHomeDevices;
     public void setCommunicationChannel() {
         commChannel = new SocketChannel(CommunicationMode.GATEWAY);

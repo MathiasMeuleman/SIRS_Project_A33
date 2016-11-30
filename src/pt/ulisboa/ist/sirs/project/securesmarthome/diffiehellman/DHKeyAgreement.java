@@ -7,6 +7,6 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationCh
  */
 public interface DHKeyAgreement {
 
-    void doDH(CommunicationChannel commChannel, byte[] pubKeyEncA, byte[] pubKeyEncB);
+    void doDH(byte[] pubKeyEncA);
     void authenticate();
 }

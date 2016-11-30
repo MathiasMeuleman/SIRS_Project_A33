@@ -1,8 +1,6 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
-
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
-
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SmartHomeDevice;
 
 

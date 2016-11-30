@@ -19,15 +19,17 @@ public class Device {
         commChannel = new SocketChannel(commMode);
     }
 
-    public void dhKeyAgreement()
-    {
-        dh.doDH(commChannel, pubKeyEncA, pubKeyEncB);
-        dhSharedSecretKey = DHKeyAgreement2.getSharedSecretKey();
+    public void setPubEncryptedSHDKey(byte[] pubEncryptedSHDKey) {
+        this.pubEncryptedSHDKey = pubEncryptedSHDKey;
+    }
+
+    public void setPubEncryptedGatewayKey(byte[] pubEncryptedGatewayKey) {
+        this.pubEncryptedGatewayKey = pubEncryptedGatewayKey;
     }
 
     protected CommunicationChannel commChannel;
-    protected byte[] pubKeyEncA;
-    protected byte[] pubKeyEncB;
+    protected byte[] pubEncryptedSHDKey;
+    protected byte[] pubEncryptedGatewayKey;
     protected SecretKey dhSharedSecretKey;
     protected SecretKey aprioriSharedKey;
     protected byte[] authenticationMessageEncrypted;
