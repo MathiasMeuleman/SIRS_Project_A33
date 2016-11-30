@@ -4,6 +4,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMo
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Authentication;
+import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementSHD;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
 
@@ -17,15 +18,13 @@ public class SmartHomeDevice extends Device{
 
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(printedKey);
 
+        dh = new DHKeyAgreementSHD();
+        dhKeyAgreement();
         // authentication part
         authenticationMessageEncrypted = Authentication.getConcatPubKeyABEncrypted(
                 aprioriSharedKey, pubKeyEncA, pubKeyEncB);
 
         //
-    }
-
-    public void setCommunicationChannel() {
-        commChannel = new SocketChannel(CommunicationMode.SHD);
     }
 
     // This 16 byte key is printed on the smartHomeDevice

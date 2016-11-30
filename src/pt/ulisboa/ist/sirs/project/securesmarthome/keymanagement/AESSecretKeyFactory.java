@@ -10,8 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class AESSecretKeyFactory {
     public static SecretKey createSecretKey(byte[] key) {
         try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("AES");
-            return factory.generateSecret(new SecretKeySpec(key, "AES"));
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+            return new SecretKeySpec(key, "PBEWithMD5AndDES");
         } catch (Exception e) {
             e.printStackTrace();
             return null;

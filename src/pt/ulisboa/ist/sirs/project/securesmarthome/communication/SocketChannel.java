@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.Buffer;
+import java.util.Arrays;
 
 /**
  * Created by Mathias on 2016-11-27.
@@ -63,6 +64,7 @@ public class SocketChannel implements CommunicationChannel {
             outStream = new DataOutputStream(clientSocket.getOutputStream());
 //            outStream.writeChar('s');
             outStream.writeInt(message.length());
+            System.out.println("SocketChannel.sendMessage: " + message);
             outStream.writeBytes(message);
             outStream.close();
             clientSocket.close();
@@ -77,7 +79,7 @@ public class SocketChannel implements CommunicationChannel {
             outStream = new DataOutputStream((clientSocket.getOutputStream()));
 //            outStream.writeChar('b');
             outStream.writeInt(message.length);
-            System.out.println("SocketChannel.message: " + message);
+            System.out.println("SocketChannel.sendMessage: " + Arrays.toString(message));
             outStream.write(message);
             outStream.close();
             clientSocket.close();
@@ -134,10 +136,10 @@ public class SocketChannel implements CommunicationChannel {
 //                System.err.println("Message not of type byte[]");
 //                return null;
 //            }
-            int size = inStream.read();
+            int size = inStream.readInt();
             byte[] message = new byte[size];
             inStream.readFully(message);
-            System.out.println("SocketChannel.receivedMessage: " + message);
+            System.out.println("SocketChannel.receivedMessage: " + Arrays.toString(message));
             inStream.close();
             clientSocket.close();
             return message;

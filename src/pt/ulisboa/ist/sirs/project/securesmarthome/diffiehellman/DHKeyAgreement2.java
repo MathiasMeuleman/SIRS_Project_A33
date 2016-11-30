@@ -1,6 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman;
 
 /*
+ * Based on Oracle software:
+ *
  * Copyright (c) 1997, 2001, Oracle and/or its affiliates. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,14 +33,14 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.*;
+import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
+import javax.crypto.interfaces.DHPublicKey;
+import javax.crypto.spec.DHParameterSpec;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.spec.*;
-import java.security.interfaces.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
-import javax.crypto.interfaces.*;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 
 /**
  * This program executes the Diffie-Hellman key agreement protocol
@@ -128,7 +130,6 @@ public class DHKeyAgreement2 {
 
 
     public static byte[] getPubKeyEncBob(byte[] pubKeyEncAlice) throws Exception {
-
         /*
          * Let's turn over to Bob. Bob has received Alice's public key
          * in encoded format.
@@ -199,35 +200,6 @@ public class DHKeyAgreement2 {
         return sharedSecretKey;
     }
 
-//        /*
-//         * At this stage, both Alice and Bob have completed the DH key
-//         * agreement protocol.
-//         * Both generate the (same) shared secret.
-//         */
-//        byte[] aliceSharedSecret = aliceKeyAgree.generateSecret();
-//        int aliceLen = aliceSharedSecret.length;
-//
-//        byte[] bobSharedSecret = new byte[aliceLen];
-//        int bobLen;
-//        try {
-//            // show example of what happens if you
-//            // provide an output buffer that is too short
-//            bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 1);
-//        } catch (ShortBufferException e) {
-//            System.out.println(e.getMessage());
-//        }
-//        // provide output buffer of required size
-//        bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 0);
-//
-//        System.out.println("Alice secret: " +
-//                Helper.toHexString(aliceSharedSecret));
-//        System.out.println("Bob secret: " +
-//                Helper.toHexString(bobSharedSecret));
-//
-//        if (!java.util.Arrays.equals(aliceSharedSecret, bobSharedSecret))
-//            throw new Exception("Shared secrets differ");
-//        System.out.println("Shared secrets are the same");
-//    }
 
     /*
      * Prints the usage of this test.

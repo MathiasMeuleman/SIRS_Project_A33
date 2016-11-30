@@ -4,6 +4,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationCh
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Authentication;
+import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 
 import javax.crypto.SecretKey;
@@ -17,46 +18,11 @@ public class Device {
 
         // setup channel
         commChannel = new SocketChannel(commMode);
-
-        // setup secret key with DH
-        dhKeyAgreement(commMode);
-
     }
 
-    public void dhKeyAgreement(CommunicationMode commMode)
+    public void dhKeyAgreement()
     {
-        // doing DH key exchange
-        if (commMode == CommunicationMode.SHD) {
-            try {
-                pubKeyEncA = DHKeyAgreement2.getPubKeyEncA("-gen");
-                // send the pubKey to the other party
-                commChannel.sendMessage("localhost:11000", pubKeyEncA);
-                // receiving the pubKeyEnc of other party
-                pubKeyEncB = commChannel.receiveByteArray();
-                // create shared secret
-                DHKeyAgreement2.createSharedSecretA(pubKeyEncB);
-            } catch (Exception e) {
-                System.err.println("Error: " + e);
-                System.exit(1);
-            }
-        }
-
-        if (commMode == CommunicationMode.GATEWAY) {
-            try {
-                // receive the pubKey from the other party
-                pubKeyEncA = commChannel.receiveByteArray();
-                pubKeyEncB = DHKeyAgreement2.getPubKeyEncB(pubKeyEncA);
-                // sending pubKey to other party
-                String dest = new String("localhost:" + commChannel.getPort());
-                commChannel.sendMessage(dest, pubKeyEncB);
-                // create shared secret
-                DHKeyAgreement2.createSharedSecretB(pubKeyEncA);
-            } catch (Exception e) {
-                System.err.println("Error: " + e);
-                System.exit(1);
-            }
-        }
-
+        dh.doDH(commChannel, pubKeyEncA, pubKeyEncB);
         dhSharedSecretKey = DHKeyAgreement2.getSharedSecretKey();
     }
 
@@ -66,4 +32,5 @@ public class Device {
     protected SecretKey dhSharedSecretKey;
     protected SecretKey aprioriSharedKey;
     protected byte[] authenticationMessageEncrypted;
+    protected DHKeyAgreement dh;
 }
