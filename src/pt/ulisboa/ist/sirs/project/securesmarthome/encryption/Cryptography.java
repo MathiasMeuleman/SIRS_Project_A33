@@ -6,7 +6,6 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.encryption;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyGenerator;
 
 import java.security.*;
-
 import java.io.*;
 import javax.crypto.*;
 
@@ -45,62 +44,35 @@ public static void main(String args[]) {
             System.out.println("Start encryption ...");
 
     /* Get Message to be sent */
-//                String input = getMessage();
             System.out.println("Message to encrypt: " + plaintext);
-
-    /* Create Secret Key */
-    /* Needs to change for getSharedKey */
-//            KeyGenerator keyGen = KeyGenerator.getInstance(ALGO);
-//            SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-//            keyGen.init(56,random);
-//            Key sharedKey = keyGen.generateKey();
 
     /* Create the Cipher and init it with the secret key */
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);
-            //System.out.println("\n" + c.getProvider().getInfo());
             c.init(Cipher.ENCRYPT_MODE, key);
             ciphertext = c.doFinal(plaintext);
-//            System.out.println("Message encrypted : " + new String(ciphertext,"UTF8"));
             System.out.println("Message encrypted : " + ciphertext);
-
-    /* Save key to a file */
-//            save(key.getEncoded(),"shared.key");
-
-    /* Save encrypted data to a file */
-//            save(ciphertext,"encrypted.txt");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return ciphertext;
     }
 
     public static byte[] decrypt(byte[] ciphertext, Key key) {
 
         byte[] plaintext = null;
-
         try {
             System.out.println("Start decryption ...");
-
-    /* Get encoded shared key from file*/
-//            byte[] encoded = load("shared.key");
-//            SecretKeyFactory kf = SecretKeyFactory.getInstance(ALGO);
-//            KeySpec ks = new DESKeySpec(encoded);
-//            SecretKey ky = kf.generateSecret(ks);
-
-    /* Get encoded data */
-//            byte[] ciphertext = load("encrypted.txt");
-//            System.out.println("Encoded data = " + new String(ciphertext,"UTF8"));
             System.out.println("Encoded data = " + ciphertext);
 
     /* Create a Cipher object and initialize it with the secret key */
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);
             c.init(Cipher.DECRYPT_MODE,key);
+            System.out.println("Cipher: " + c.getAlgorithm().toString());
 
     /* Update and decrypt */
             plaintext = c.doFinal(ciphertext);
-//            System.out.println("Plain Text : "+new String(plaintext,"UTF8"));
+            System.out.println("Length = " + ciphertext.length);
             System.out.println("Plain Text : " + plaintext);
 
         } catch (Exception e) {

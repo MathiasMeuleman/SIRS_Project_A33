@@ -5,6 +5,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SmartHomeDevice;
 
+
 /**
  * Created by Alex Anders on 18/11/2016.
  */
@@ -20,7 +21,7 @@ public class Main {
                 throw new Exception("Wrong number of command options");
             }
             System.out.println("Initializing gateway");
-            Gateway gateway = new Gateway(CommunicationMode.GATEWAY, args[1].getBytes());
+            Gateway gateway = new Gateway(CommunicationMode.GATEWAY, args[1]);
             System.out.println("Testing");
         }
 

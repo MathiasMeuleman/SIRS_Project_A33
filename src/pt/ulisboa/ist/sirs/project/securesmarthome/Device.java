@@ -3,7 +3,6 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.Authentication;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 
@@ -33,4 +32,5 @@ public class Device {
     protected SecretKey aprioriSharedKey;
     protected byte[] authenticationMessageEncrypted;
     protected DHKeyAgreement dh;
+    protected byte[] authenticationMessage;
 }

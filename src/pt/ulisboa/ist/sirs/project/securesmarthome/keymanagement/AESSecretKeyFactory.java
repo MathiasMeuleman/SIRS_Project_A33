@@ -1,17 +1,21 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement;
 
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Arrays;
 
 /**
  * Created by Alex Anders on 29/11/2016.
  */
 public class AESSecretKeyFactory {
-    public static SecretKey createSecretKey(byte[] key) {
+    public static SecretKey createSecretKey(String key) {
         try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-            return new SecretKeySpec(key, "PBEWithMD5AndDES");
+            SecureRandom rand = new SecureRandom(key.getBytes(StandardCharsets.UTF_8));
+            byte[] keyBytes = new byte[16];
+            rand.nextBytes(keyBytes);
+            return new SecretKeySpec(keyBytes, 0, 16, "AES");
         } catch (Exception e) {
             e.printStackTrace();
             return null;
