@@ -4,7 +4,6 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationCh
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 
 import javax.crypto.SecretKey;
 

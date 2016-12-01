@@ -41,10 +41,10 @@ public static void main(String args[]) {
         byte[] ciphertext = null;
 
         try {
-            System.out.println("Start encryption ...");
+//            System.out.println("Start encryption ...");
 
     /* Get Message to be sent */
-            System.out.println("Message to encrypt: " + plaintext);
+//            System.out.println("Message to encrypt: " + plaintext);
 
     /* Create the Cipher and init it with the secret key */
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);
@@ -60,7 +60,7 @@ public static void main(String args[]) {
     public static byte[] decrypt(byte[] ciphertext, Key key) {
         byte[] plaintext = null;
         try {
-            System.out.println("Start decryption ...");
+//            System.out.println("Start decryption ...");
 
     /* Create a Cipher object and initialize it with the secret key */
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);
@@ -68,7 +68,7 @@ public static void main(String args[]) {
 
     /* Update and decrypt */
             plaintext = c.doFinal(ciphertext);
-            System.out.println("Plain Text : " + plaintext);
+//            System.out.println("Plain Text : " + plaintext);
 
         } catch (Exception e) {
             e.printStackTrace();

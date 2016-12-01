@@ -37,6 +37,7 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
@@ -175,6 +176,7 @@ public class DHKeyAgreement2 {
         System.out.println("ALICE: Execute PHASE1 ...");
         aliceKeyAgree.doPhase(bobPubKey, true);
         sharedSecretKey = aliceKeyAgree.generateSecret("AES");
+        resizeKey();
     }
 
     public static void createSharedSecretB(byte[] pubKeyEncAlice) throws Exception {
@@ -193,6 +195,19 @@ public class DHKeyAgreement2 {
         System.out.println("BOB: Execute PHASE1 ...");
         bobKeyAgree.doPhase(alicePubKey, true);
         sharedSecretKey = bobKeyAgree.generateSecret("AES");
+        resizeKey();
+    }
+
+    /**
+     * Assuming a key > 128 bits (16 bytes), needs to be resized to 128 bits (16 bytes)
+     */
+    private static void resizeKey() {
+        byte[] key = sharedSecretKey.getEncoded();
+        byte[] resizedKeyBytes = new byte[16];
+        for(int i = 0; i< resizedKeyBytes.length; i++) {
+            resizedKeyBytes[i] = key[i];
+        }
+        sharedSecretKey = new SecretKeySpec(resizedKeyBytes, "AES");
     }
 
     public static SecretKey getSharedSecretKey() {

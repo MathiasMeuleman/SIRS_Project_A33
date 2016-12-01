@@ -61,7 +61,7 @@ public class SocketChannel implements CommunicationChannel {
             outStream = new DataOutputStream(clientSocket.getOutputStream());
 //            outStream.writeChar('s');
             outStream.writeInt(message.length());
-            System.out.println("SocketChannel.sendMessage: " + message);
+//            System.out.println("SocketChannel.sendMessage: " + message);
             outStream.writeBytes(message);
             outStream.close();
             clientSocket.close();
@@ -76,7 +76,7 @@ public class SocketChannel implements CommunicationChannel {
             outStream = new DataOutputStream((clientSocket.getOutputStream()));
 //            outStream.writeChar('b');
             outStream.writeInt(message.length);
-            System.out.println("SocketChannel.sendMessage: " + Arrays.toString(message));
+//            System.out.println("SocketChannel.sendMessage: " + Arrays.toString(message));
             outStream.write(message);
             outStream.close();
             clientSocket.close();
@@ -104,7 +104,7 @@ public class SocketChannel implements CommunicationChannel {
     public String receiveString() {
         try {
             clientSocket = serverSocket.accept();
-            System.out.println("Accepted connection from client");
+//            System.out.println("Accepted connection from client");
             BufferedReader inStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 //            if (inStream.read() != 's') {
 //                System.err.println("Message not of type String");
@@ -131,7 +131,7 @@ public class SocketChannel implements CommunicationChannel {
     public byte[] receiveByteArray() {
         try {
             clientSocket = serverSocket.accept();
-            System.out.println("Accepted connection from client");
+//            System.out.println("Accepted connection from client");
             DataInputStream inStream = new DataInputStream(clientSocket.getInputStream());
 //            if(inStream.read() != 'b') {
 //                System.err.println("Message not of type byte[]");
@@ -140,7 +140,7 @@ public class SocketChannel implements CommunicationChannel {
             int size = inStream.readInt();
             byte[] message = new byte[size];
             inStream.readFully(message);
-            System.out.println("SocketChannel.receivedMessage: " + Arrays.toString(message));
+//            System.out.println("SocketChannel.receivedMessage: " + Arrays.toString(message));
             inStream.close();
             clientSocket.close();
             return message;
