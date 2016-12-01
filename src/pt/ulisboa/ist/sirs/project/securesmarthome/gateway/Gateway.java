@@ -59,10 +59,13 @@ public class Gateway extends Device{
             authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
                     aprioriSharedKeysList.get(indexOfSHD));
             // authenticate by sending it to the other party
-            commChannel.sendMessage(authenticationMessageEncrypted);
+            commChannel.sendMessage("localhost:12005",authenticationMessageEncrypted);
+            System.out.println("Gateway: SHD authentication succeed!");
         }
-        else
+        else {
             smartHomeDevices.add(new AuthenticatedSHD(false));
+            System.out.println("Gateway: SHD authentication failed!");
+        }
     }
 
     private void receivePubKey() {
