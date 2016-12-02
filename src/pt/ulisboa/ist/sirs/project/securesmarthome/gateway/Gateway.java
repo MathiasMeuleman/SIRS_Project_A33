@@ -2,7 +2,6 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementGateway;
@@ -19,6 +18,8 @@ import java.util.List;
  * Created by Mathias on 2016-11-21.
  */
 public class Gateway extends Device {
+
+    public static final long TIMESTAMP_THRESHOLD = 500;
 
     public Gateway(CommunicationMode commMode, String key) {
         super(commMode);
@@ -80,10 +81,14 @@ public class Gateway extends Device {
             byte[] encrypted = commChannel.receiveByteArray();
             byte[] received = Cryptography.decrypt(encrypted, dhSharedSecretKey);
             long timestamp = retrieveTimestamp(received);
-            byte[] dataBytes = retrieveData(received);
-            String data = new String(dataBytes);
-            System.out.println("Timestamp: " + timestamp);
-            System.out.println("Data: " + data);
+            if(checkTimestamp(timestamp)) {
+                byte[] dataBytes = retrieveData(received);
+                String data = new String(dataBytes);
+                System.out.println("Timestamp: " + timestamp);
+                System.out.println("Data: " + data);
+            } else {
+                System.err.println("Invalid timestamp detected: " + timestamp);
+            }
         }
     }
 
@@ -101,6 +106,13 @@ public class Gateway extends Device {
             stampBytes[i] = data[i];
         }
         return Helper.bytesToLong(stampBytes);
+    }
+
+    private boolean checkTimestamp(long timestamp) {
+        long current = System.currentTimeMillis();
+        if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
+            return false;
+        return true;
     }
 
     private void receivePubKey() {

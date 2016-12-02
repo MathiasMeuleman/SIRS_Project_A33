@@ -85,6 +85,13 @@ public class SmartHomeDevice extends Device {
                 e.printStackTrace();
             }
         }
+        for (int i = 0; i < 2; i++) {
+            String data = "" + temp;
+            byte[] dataBytes = data.getBytes();
+            byte[] toSend = addPhonyTimestamp(dataBytes);
+            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
+            commChannel.sendMessage("localhost:11000", encrypted);
+        }
         for (int i = 0; i <= 12; i++) {
             String data = "" + temp;
             byte[] dataBytes = data.getBytes();
@@ -109,6 +116,20 @@ public class SmartHomeDevice extends Device {
      */
     public byte[] addTimestamp(byte[] data) {
         long timestamp = System.currentTimeMillis();
+        byte[] stampBytes = Helper.longToBytes(timestamp);
+        int size = data.length + stampBytes.length;
+        byte[] toSend = new byte[size];
+        for (int i = 0; i < stampBytes.length; i++) {
+            toSend[i] = stampBytes[i];
+        }
+        for (int i = 0; i < data.length; i++) {
+            toSend[stampBytes.length + i] = data[i];
+        }
+        return toSend;
+    }
+
+    public byte[] addPhonyTimestamp(byte[] data) {
+        long timestamp = System.currentTimeMillis() + 1200000;
         byte[] stampBytes = Helper.longToBytes(timestamp);
         int size = data.length + stampBytes.length;
         byte[] toSend = new byte[size];
