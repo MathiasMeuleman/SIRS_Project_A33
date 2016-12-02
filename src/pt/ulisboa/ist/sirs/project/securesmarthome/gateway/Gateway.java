@@ -32,8 +32,10 @@ public class Gateway extends Device {
         // either connection is established and the SHD is sending its data
         // or connection was dropped because of authentication issues
         // nevertheless a new channel needs to be setup
-        System.out.println("New channel is setup.");
-        commChannel.setup();
+        if (!smartHomeDevices.get(0).isAuthenticated()) {
+            System.out.println("New channel is setup.");
+            commChannel.setup();
+        }
     }
 
 
