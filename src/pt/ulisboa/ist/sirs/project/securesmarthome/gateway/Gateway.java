@@ -2,7 +2,6 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementGateway;
@@ -19,6 +18,8 @@ import java.util.List;
  * Created by Mathias on 2016-11-21.
  */
 public class Gateway extends Device {
+
+    public static final long TIMESTAMP_THRESHOLD = 500;
 
     public Gateway(CommunicationMode commMode, String key) {
         super(commMode);
@@ -92,12 +93,44 @@ public class Gateway extends Device {
         }
     }
 
+    @Override
     public void run() {
         while(true) {
             byte[] encrypted = commChannel.receiveByteArray();
-            byte[] data = Cryptography.decrypt(encrypted, dhSharedSecretKey);
-            System.out.println("Receiving data");
+            byte[] received = Cryptography.decrypt(encrypted, dhSharedSecretKey);
+            long timestamp = retrieveTimestamp(received);
+            if(checkTimestamp(timestamp)) {
+                byte[] dataBytes = retrieveData(received);
+                String data = new String(dataBytes);
+                System.out.println("Timestamp: " + timestamp);
+                System.out.println("Data: " + data);
+            } else {
+                System.err.println("Invalid timestamp detected: " + timestamp);
+            }
         }
+    }
+
+    private byte[] retrieveData(byte[] received) {
+        byte[] data = new byte[received.length - Long.BYTES];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = received[i + Long.BYTES];
+        }
+        return data;
+    }
+
+    private long retrieveTimestamp(byte[] data) {
+        byte[] stampBytes = new byte[Long.BYTES];
+        for (int i = 0; i < Long.BYTES; i++) {
+            stampBytes[i] = data[i];
+        }
+        return Helper.bytesToLong(stampBytes);
+    }
+
+    private boolean checkTimestamp(long timestamp) {
+        long current = System.currentTimeMillis();
+        if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
+            return false;
+        return true;
     }
 
     private void receivePubKey() {
@@ -109,10 +142,6 @@ public class Gateway extends Device {
     }
 
     private List<AuthenticatedSHD> smartHomeDevices;
-
-    public void setCommunicationChannel() {
-        commChannel = new SocketChannel(CommunicationMode.GATEWAY);
-    }
 
     private List<SecretKey> aprioriSharedKeysList;
 }

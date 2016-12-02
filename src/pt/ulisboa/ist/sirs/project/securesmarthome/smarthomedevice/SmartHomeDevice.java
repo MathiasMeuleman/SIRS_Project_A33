@@ -8,14 +8,13 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementS
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 
 
 /**
  * Created by Mathias on 2016-11-21.
  */
-public class SmartHomeDevice extends Device{
+public class SmartHomeDevice extends Device {
 
     public SmartHomeDevice(CommunicationMode commMode) {
         super(commMode);
@@ -70,14 +69,82 @@ public class SmartHomeDevice extends Device{
     }
 
     public void run() {
-        SecureRandom rand = new SecureRandom();
-        byte[] data = new byte[32];
-        while(true) {
-            rand.nextBytes(data);
-            byte[] encrypted = Cryptography.encrypt(data, dhSharedSecretKey);
+        Thread t = new Thread(this::temperatureSim);
+        t.start();
+    }
+
+
+    private void temperatureSim() {
+        //Simulate a temperature device :)
+        int temp = 10;
+        for (int i = 0; i <= 12; i++) {
+            String data = "" + temp;
+            byte[] dataBytes = data.getBytes();
+            byte[] toSend = addTimestamp(dataBytes);
+            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
             commChannel.sendMessage("localhost:11000", encrypted);
-            System.out.println("Sending data");
+            temp++;
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        for (int i = 0; i < 2; i++) {
+            String data = "" + temp;
+            byte[] dataBytes = data.getBytes();
+            byte[] toSend = addPhonyTimestamp(dataBytes);
+            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
+            commChannel.sendMessage("localhost:11000", encrypted);
+        }
+        for (int i = 0; i <= 12; i++) {
+            String data = "" + temp;
+            byte[] dataBytes = data.getBytes();
+            byte[] toSend = addTimestamp(dataBytes);
+            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
+            commChannel.sendMessage("localhost:11000", encrypted);
+            temp--;
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        while(true);
+    }
+
+    /**
+     * Prepend current timestamp to the data
+     * @param data
+     * @return
+     */
+    public byte[] addTimestamp(byte[] data) {
+        long timestamp = System.currentTimeMillis();
+        byte[] stampBytes = Helper.longToBytes(timestamp);
+        int size = data.length + stampBytes.length;
+        byte[] toSend = new byte[size];
+        for (int i = 0; i < stampBytes.length; i++) {
+            toSend[i] = stampBytes[i];
+        }
+        for (int i = 0; i < data.length; i++) {
+            toSend[stampBytes.length + i] = data[i];
+        }
+        return toSend;
+    }
+
+    public byte[] addPhonyTimestamp(byte[] data) {
+        long timestamp = System.currentTimeMillis() + 1200000;
+        byte[] stampBytes = Helper.longToBytes(timestamp);
+        int size = data.length + stampBytes.length;
+        byte[] toSend = new byte[size];
+        for (int i = 0; i < stampBytes.length; i++) {
+            toSend[i] = stampBytes[i];
+        }
+        for (int i = 0; i < data.length; i++) {
+            toSend[stampBytes.length + i] = data[i];
+        }
+        return toSend;
     }
 
     private void sendPubKey() {
