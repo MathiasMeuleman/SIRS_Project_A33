@@ -20,6 +20,7 @@ public class Main {
             }
             System.out.println("Initializing gateway");
             Gateway gateway = new Gateway(CommunicationMode.GATEWAY, args[1]);
+            gateway.run();
         }
 
         if (args[0].equals("smartHomeDevice")) {
@@ -28,6 +29,7 @@ public class Main {
             }
             System.out.println("Initializing SHD");
             SmartHomeDevice smartHomeDevice = new SmartHomeDevice(CommunicationMode.SHD);
+            smartHomeDevice.run();
         }
     }
 }

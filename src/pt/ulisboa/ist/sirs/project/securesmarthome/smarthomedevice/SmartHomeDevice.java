@@ -1,15 +1,14 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement2;
 import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreementSHD;
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 
@@ -26,9 +25,6 @@ public class SmartHomeDevice extends Device{
         // Get all public keys
         dh = new DHKeyAgreementSHD();
         pubEncryptedSHDKey = DHKeyAgreement2.getPubKeyEncSHD("-gen");
-//        System.out.println("-------");
-//        System.out.println("Public Key: " + Arrays.toString(pubEncryptedSHDKey));
-//        System.out.println("-------");
         sendPubKey();
         receivePubKey();
         dh.doDH(pubEncryptedGatewayKey);
@@ -68,11 +64,22 @@ public class SmartHomeDevice extends Device{
         }
     }
 
-    public void sendPubKey() {
+    public void run() {
+        SecureRandom rand = new SecureRandom();
+        byte[] data = new byte[32];
+        while(true) {
+            rand.nextBytes(data);
+            byte[] encrypted = Cryptography.encrypt(data, dhSharedSecretKey);
+            commChannel.sendMessage("localhost:11000", encrypted);
+            System.out.println("Sending data");
+        }
+    }
+
+    private void sendPubKey() {
         commChannel.sendMessage("localhost:11000", pubEncryptedSHDKey);
     }
 
-    public void receivePubKey() {
+    private void receivePubKey() {
         pubEncryptedGatewayKey = commChannel.receiveByteArray();
     }
 

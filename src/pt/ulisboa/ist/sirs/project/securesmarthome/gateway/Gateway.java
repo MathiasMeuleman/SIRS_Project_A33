@@ -10,7 +10,6 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +77,14 @@ public class Gateway extends Device {
         authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
                 aprioriSharedKeysList.get(indexOfSHD));
         commChannel.sendMessage("localhost:12005", authenticationMessageEncrypted);
+    }
+
+    public void run() {
+        while(true) {
+            byte[] encrypted = commChannel.receiveByteArray();
+            byte[] data = Cryptography.decrypt(encrypted, dhSharedSecretKey);
+            System.out.println("Receiving data");
+        }
     }
 
     private void receivePubKey() {
