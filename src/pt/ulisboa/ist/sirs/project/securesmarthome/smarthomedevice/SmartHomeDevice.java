@@ -42,16 +42,25 @@ public class SmartHomeDevice extends Device{
         authenticationMessageEncrypted = commChannel.receiveByteArray();
         // decrypt it
         authenticationMessage = Cryptography.decrypt(authenticationMessageEncrypted,aprioriSharedKey);
-        // compare with concatenated keys
-        byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
-        if (Arrays.equals(authenticationMessage, concatKeys)) {
-            authenticatedGateway = true;
-            System.out.println("SHD: Gateway authentication succeed!");
-        }
-        else
+        if (authenticationMessage == null)
         {
+            // wrong key!!!
             authenticatedGateway = false;
             System.out.println("SHD: Gateway authentication failed!");
+        }
+        else {
+            // compare with concatenated keys
+            byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
+            if (Arrays.equals(authenticationMessage, concatKeys)) {
+                authenticatedGateway = true;
+                System.out.println("SHD: Gateway authentication succeed!");
+            }
+            else {
+                // wrong public keys used for authentication
+                System.out.println("Wrong public keys used for authentication!");
+                authenticatedGateway = false;
+                System.out.println("SHD: Gateway authentication failed!");
+            }
         }
     }
 

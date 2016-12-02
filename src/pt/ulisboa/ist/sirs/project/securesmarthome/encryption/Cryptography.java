@@ -60,7 +60,6 @@ public static void main(String args[]) {
     public static byte[] decrypt(byte[] ciphertext, Key key) {
         byte[] plaintext = null;
         try {
-//            System.out.println("Start decryption ...");
 
     /* Create a Cipher object and initialize it with the secret key */
             Cipher c = Cipher.getInstance(ALGO+"/"+MODE+"/"+PADDING);
@@ -68,13 +67,17 @@ public static void main(String args[]) {
 
     /* Update and decrypt */
             plaintext = c.doFinal(ciphertext);
-//            System.out.println("Plain Text : " + plaintext);
+            return plaintext;
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            System.out.println("Wrong key used for decryption!");
+            return null;
         }
-
-        return plaintext;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static String getMessage() {
