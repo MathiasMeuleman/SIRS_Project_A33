@@ -59,6 +59,16 @@ public class SocketChannel implements CommunicationChannel {
         }
     }
 
+    public void gatewayDropConnection(CommunicationMode mode) {
+        try {
+            serverSocket.close();
+            clientSocket.close();
+            setup();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setupUser() {
 
     }
