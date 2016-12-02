@@ -3,7 +3,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.diffiehellman.DHKeyAgreement;
+import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
 
 import javax.crypto.SecretKey;
 
