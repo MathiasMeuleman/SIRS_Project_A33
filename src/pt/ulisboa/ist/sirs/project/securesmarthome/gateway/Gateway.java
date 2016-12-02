@@ -79,19 +79,28 @@ public class Gateway extends Device {
         while(true) {
             byte[] encrypted = commChannel.receiveByteArray();
             byte[] received = Cryptography.decrypt(encrypted, dhSharedSecretKey);
-            byte[] stampBytes = new byte[Long.BYTES];
-            byte[] dataBytes = new byte[received.length - Long.BYTES];
-            for (int i = 0; i < Long.BYTES; i++) {
-                stampBytes[i] = received[i];
-            }
-            long timestamp = Helper.bytesToLong(stampBytes);
-            for (int i = 0; i < dataBytes.length; i++) {
-                dataBytes[i] = received[i + Long.BYTES];
-            }
+            long timestamp = retrieveTimestamp(received);
+            byte[] dataBytes = retrieveData(received);
             String data = new String(dataBytes);
             System.out.println("Timestamp: " + timestamp);
             System.out.println("Data: " + data);
         }
+    }
+
+    private byte[] retrieveData(byte[] received) {
+        byte[] data = new byte[received.length - Long.BYTES];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = received[i + Long.BYTES];
+        }
+        return data;
+    }
+
+    private long retrieveTimestamp(byte[] data) {
+        byte[] stampBytes = new byte[Long.BYTES];
+        for (int i = 0; i < Long.BYTES; i++) {
+            stampBytes[i] = data[i];
+        }
+        return Helper.bytesToLong(stampBytes);
     }
 
     private void receivePubKey() {

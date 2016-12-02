@@ -68,6 +68,7 @@ public class SmartHomeDevice extends Device {
         t.start();
     }
 
+
     private void temperatureSim() {
         //Simulate a temperature device :)
         int temp = 10;
