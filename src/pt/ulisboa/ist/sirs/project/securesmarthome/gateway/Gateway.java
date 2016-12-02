@@ -72,11 +72,6 @@ public class Gateway extends Device {
                 System.out.println("Gateway: SHD authentication failed!");
             }
         }
-        // FIXME for testing purposes
-        // following 2 lines have to be deleted!
-        authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
-                aprioriSharedKeysList.get(indexOfSHD));
-        commChannel.sendMessage("localhost:12005", authenticationMessageEncrypted);
     }
 
     @Override
