@@ -10,4 +10,8 @@ public interface CommunicationChannel {
     byte[] receiveByteArray();
 
     int getPort();
+
+    void gatewayDropConnection();
+
+    void setup();
 }

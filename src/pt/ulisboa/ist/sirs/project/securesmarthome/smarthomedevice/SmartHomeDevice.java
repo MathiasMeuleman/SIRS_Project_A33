@@ -32,6 +32,11 @@ public class SmartHomeDevice extends Device{
         System.out.println("Finished DH");
 
         // authentication part
+        authenticateGateway();
+    }
+
+    public void authenticateGateway()
+    {
         // generate authentication message
         authenticationMessage = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
         // encrypt authentication message

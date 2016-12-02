@@ -25,13 +25,22 @@ public class Gateway extends Device {
         smartHomeDevices = new ArrayList<>();
         aprioriSharedKeysList = new ArrayList<>();
 
+        // do this in a thread for each new SHD
         addSHDToSHS(key, 0);
+
+        // either connection is established and the SHD is sending its data
+        // or connection was dropped because of authentication issues
+        // nevertheless a new channel needs to be setup
+        System.out.println("New channel is setup.");
+        commChannel.setup();
     }
+
 
     public void addSHDToSHS(String aprioriSharedKey, int indexOfSHD) {
         // add the new input key to the list for authentication
         aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(aprioriSharedKey));
 
+        // do DH to establish shared key
         dh = new DHKeyAgreementGateway();
         receivePubKey();
         pubEncryptedGatewayKey = DHKeyAgreement2.getPubKeyEncGW(pubEncryptedSHDKey);
@@ -40,7 +49,12 @@ public class Gateway extends Device {
         dhSharedSecretKey = DHKeyAgreement2.getSharedSecretKey();
         System.out.println("Finished DH");
 
-        // authentication part
+        // authentication part of station to station
+        authenticateSHD(indexOfSHD);
+    }
+
+    public void authenticateSHD(int indexOfSHD)
+    {
         // receive authentication message from SHD
         authenticationMessageEncrypted = commChannel.receiveByteArray();
         // decrypt it
@@ -50,6 +64,8 @@ public class Gateway extends Device {
             // wrong key!!!
             smartHomeDevices.add(new AuthenticatedSHD(false));
             System.out.println("Gateway: SHD authentication failed!");
+            commChannel.gatewayDropConnection();
+            System.out.println("Drop connection to that SHD!");
         } else {
             // compare with concatenated keys
             byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
@@ -70,6 +86,8 @@ public class Gateway extends Device {
                 System.out.println("Wrong public keys used for authentication!");
                 smartHomeDevices.add(new AuthenticatedSHD(false));
                 System.out.println("Gateway: SHD authentication failed!");
+                commChannel.gatewayDropConnection();
+                System.out.println("Drop connection to that SHD!");
             }
         }
     }

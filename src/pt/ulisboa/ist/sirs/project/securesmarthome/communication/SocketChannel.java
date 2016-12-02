@@ -22,7 +22,7 @@ public class SocketChannel implements CommunicationChannel {
         setup();
     }
 
-    private void setup() {
+    public void setup() {
         try {
             switch (mode) {
                 case GATEWAY:
@@ -59,11 +59,10 @@ public class SocketChannel implements CommunicationChannel {
         }
     }
 
-    public void gatewayDropConnection(CommunicationMode mode) {
+    public void gatewayDropConnection() {
         try {
             serverSocket.close();
             clientSocket.close();
-            setup();
         } catch (IOException e) {
             e.printStackTrace();
         }
