@@ -10,7 +10,6 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +64,14 @@ public class Gateway extends Device{
         else {
             smartHomeDevices.add(new AuthenticatedSHD(false));
             System.out.println("Gateway: SHD authentication failed!");
+        }
+    }
+
+    public void run() {
+        while(true) {
+            byte[] encrypted = commChannel.receiveByteArray();
+            byte[] data = Cryptography.decrypt(encrypted, dhSharedSecretKey);
+            System.out.println("Receiving data");
         }
     }
 
