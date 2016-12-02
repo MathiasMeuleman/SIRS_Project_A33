@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created by Mathias on 2016-11-21.
  */
-public class Gateway extends Device{
+public class Gateway extends Device {
 
     public Gateway(CommunicationMode commMode, String key) {
         super(commMode);
@@ -29,8 +29,7 @@ public class Gateway extends Device{
         addSHDToSHS(key, 0);
     }
 
-    public void addSHDToSHS(String aprioriSharedKey, int indexOfSHD)
-    {
+    public void addSHDToSHS(String aprioriSharedKey, int indexOfSHD) {
         // add the new input key to the list for authentication
         aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(aprioriSharedKey));
 
@@ -48,24 +47,37 @@ public class Gateway extends Device{
         // decrypt it
         authenticationMessage = Cryptography.decrypt(authenticationMessageEncrypted,
                 aprioriSharedKeysList.get(indexOfSHD));
-        // compare with concatenated keys
-        byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
-        if (Arrays.equals(authenticationMessage, concatKeys)) {
-            smartHomeDevices.add(new AuthenticatedSHD(true));
-            // authenticate gateway
-            // generate authentication message
-            authenticationMessage = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
-            // encrypt authentication message
-            authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
-                    aprioriSharedKeysList.get(indexOfSHD));
-            // authenticate by sending it to the other party
-            commChannel.sendMessage("localhost:12005",authenticationMessageEncrypted);
-            System.out.println("Gateway: SHD authentication succeed!");
-        }
-        else {
+        if (authenticationMessage == null) {
+            // wrong key!!!
             smartHomeDevices.add(new AuthenticatedSHD(false));
             System.out.println("Gateway: SHD authentication failed!");
+        } else {
+            // compare with concatenated keys
+            byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
+            if (Arrays.equals(authenticationMessage, concatKeys)) {
+                smartHomeDevices.add(new AuthenticatedSHD(true));
+                // authenticate gateway
+                // generate authentication message
+                authenticationMessage = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
+                // encrypt authentication message
+                authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
+                        aprioriSharedKeysList.get(indexOfSHD));
+                // authenticate by sending it to the other party
+                commChannel.sendMessage("localhost:12005", authenticationMessageEncrypted);
+                System.out.println("Gateway: SHD authentication succeed!");
+            }
+            else {
+                // wrong public keys used for authentication
+                System.out.println("Wrong public keys used for authentication!");
+                smartHomeDevices.add(new AuthenticatedSHD(false));
+                System.out.println("Gateway: SHD authentication failed!");
+            }
         }
+        // FIXME for testing purposes
+        // following 2 lines have to be deleted!
+        authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage,
+                aprioriSharedKeysList.get(indexOfSHD));
+        commChannel.sendMessage("localhost:12005", authenticationMessageEncrypted);
     }
 
     private void receivePubKey() {
@@ -77,8 +89,10 @@ public class Gateway extends Device{
     }
 
     private List<AuthenticatedSHD> smartHomeDevices;
+
     public void setCommunicationChannel() {
         commChannel = new SocketChannel(CommunicationMode.GATEWAY);
     }
+
     private List<SecretKey> aprioriSharedKeysList;
 }
