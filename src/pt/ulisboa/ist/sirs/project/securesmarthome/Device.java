@@ -10,7 +10,7 @@ import javax.crypto.SecretKey;
 /**
  * Created by Alex Anders on 21/11/2016.
  */
-public class Device {
+public class Device implements Runnable {
 
     public Device(CommunicationMode commMode) {
 
@@ -18,12 +18,8 @@ public class Device {
         commChannel = new SocketChannel(commMode);
     }
 
-    public void setPubEncryptedSHDKey(byte[] pubEncryptedSHDKey) {
-        this.pubEncryptedSHDKey = pubEncryptedSHDKey;
-    }
-
-    public void setPubEncryptedGatewayKey(byte[] pubEncryptedGatewayKey) {
-        this.pubEncryptedGatewayKey = pubEncryptedGatewayKey;
+    public void run() {
+        System.out.println("Running method in Device, should be Overridden in subclass");
     }
 
     protected CommunicationChannel commChannel;

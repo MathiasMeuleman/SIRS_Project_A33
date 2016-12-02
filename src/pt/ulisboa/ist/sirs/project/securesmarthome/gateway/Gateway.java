@@ -79,11 +79,23 @@ public class Gateway extends Device {
         commChannel.sendMessage("localhost:12005", authenticationMessageEncrypted);
     }
 
+    @Override
     public void run() {
         while(true) {
             byte[] encrypted = commChannel.receiveByteArray();
-            byte[] data = Cryptography.decrypt(encrypted, dhSharedSecretKey);
-            System.out.println("Receiving data");
+            byte[] received = Cryptography.decrypt(encrypted, dhSharedSecretKey);
+            byte[] stampBytes = new byte[Long.BYTES];
+            byte[] dataBytes = new byte[received.length - Long.BYTES];
+            for (int i = 0; i < Long.BYTES; i++) {
+                stampBytes[i] = received[i];
+            }
+            long timestamp = Helper.bytesToLong(stampBytes);
+            for (int i = 0; i < dataBytes.length; i++) {
+                dataBytes[i] = received[i + Long.BYTES];
+            }
+            String data = new String(dataBytes);
+            System.out.println("Timestamp: " + timestamp);
+            System.out.println("Data: " + data);
         }
     }
 
@@ -96,10 +108,6 @@ public class Gateway extends Device {
     }
 
     private List<AuthenticatedSHD> smartHomeDevices;
-
-    public void setCommunicationChannel() {
-        commChannel = new SocketChannel(CommunicationMode.GATEWAY);
-    }
 
     private List<SecretKey> aprioriSharedKeysList;
 }

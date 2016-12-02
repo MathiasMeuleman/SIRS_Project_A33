@@ -3,6 +3,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 
 import javax.crypto.SecretKey;
+import java.nio.ByteBuffer;
 
 /**
  * Created by Alex Anders on 21/11/2016.
@@ -44,5 +45,30 @@ public class Helper {
         System.arraycopy(pubKeyEncB, 0, concatPubKeyAB, pubKeyEncA.length, pubKeyEncB.length);
 
         return concatPubKeyAB;
+    }
+
+    private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+
+    /**
+     * Convert long to bytes
+     * @param x
+     * @return
+     */
+    public static byte[] longToBytes(long x) {
+        buffer.putLong(0, x);
+        return buffer.array();
+    }
+
+    /**
+     * Convert bytes to long
+     * @param bytes
+     * @return
+     */
+    public static long bytesToLong(byte[] bytes) {
+        buffer.put(bytes);
+        buffer.flip();//need flip
+        long res = buffer.getLong();
+        buffer.clear();
+        return res;
     }
 }
