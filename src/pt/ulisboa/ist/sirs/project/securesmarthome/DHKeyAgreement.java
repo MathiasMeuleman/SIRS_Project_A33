@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 /*
  * Based on Oracle software:

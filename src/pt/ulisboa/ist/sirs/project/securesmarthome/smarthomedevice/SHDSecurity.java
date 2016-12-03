@@ -2,7 +2,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
-import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
+import pt.ulisboa.ist.sirs.project.securesmarthome.DHKeyAgreement;
 
 import java.util.Arrays;
 

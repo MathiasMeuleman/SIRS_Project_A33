@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.encryption;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 /**
  * Created by maxwell on 11/28/16.
