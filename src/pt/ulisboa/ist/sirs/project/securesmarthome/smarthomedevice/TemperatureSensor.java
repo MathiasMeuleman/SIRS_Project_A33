@@ -5,14 +5,14 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
  */
 public class TemperatureSensor {
 
-    private SHDSecurity presentation;
+    private SHDSecurity security;
 
-    public TemperatureSensor(SHDSecurity presentation) {
-        this.presentation = presentation;
+    public TemperatureSensor(SHDSecurity security) {
+        this.security = security;
     }
 
     public void run() {
-        presentation.connectToDevice();
+        security.connectToDevice();
         temperatureSim();
     }
 
@@ -22,13 +22,13 @@ public class TemperatureSensor {
         for (int i = 0; i <= 12; i++) {
             String data = "" + temp;
             byte[] dataBytes = data.getBytes();
-            presentation.send(dataBytes);
+            security.send(dataBytes);
             temp++;
         }
         for (int i = 0; i <= 12; i++) {
             String data = "" + temp;
             byte[] dataBytes = data.getBytes();
-            presentation.send(dataBytes);
+            security.send(dataBytes);
             temp--;
             try {
                 Thread.sleep(300);

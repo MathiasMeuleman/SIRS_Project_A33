@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
-
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
@@ -22,15 +21,16 @@ public class GatewaySecurity extends SecurityManager {
 
     @Override
     public void shareSessionKey() {
+        aprioriSharedKey = AESSecretKeyFactory.createSecretKey(key);
         // add the new input key to the list for authentication
         SHD_ID = Gateway.aprioriSharedKeysList.size();
         Gateway.aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(key));
 
         // do DH to establish shared key
         receivePubKey();
-        pubEncryptedGatewayKey = DHKeyAgreement.getPubKeyEncGW(pubEncryptedSHDKey);
+        publicGatewayKey = DHKeyAgreement.getPubKeyEncGW(publicSHDKey);
         sendPubKey();
-        DHKeyAgreement.createSharedSecretB(pubEncryptedSHDKey);
+        DHKeyAgreement.createSharedSecretB(publicSHDKey);
         sessionKey = DHKeyAgreement.getSharedSecretKey();
         System.out.println("Finished DH");
     }
@@ -47,12 +47,12 @@ public class GatewaySecurity extends SecurityManager {
             System.out.println("Drop connection to that SHD!");
         } else {
             // compare with concatenated keys
-            byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
+            byte[] concatKeys = Helper.getConcatPubKeys(publicSHDKey, publicGatewayKey);
             if (Arrays.equals(authenticationMessage, concatKeys)) {
                 Gateway.smartHomeDevices.add(new AuthenticatedSHD(true));
                 // authenticate gateway
                 // generate authentication message
-                authenticationMessage = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
+                authenticationMessage = Helper.getConcatPubKeys(publicGatewayKey, publicSHDKey);
                 // authenticate by sending it to the other party
                 sendWithoutTimestamp(authenticationMessage);
 
@@ -70,11 +70,11 @@ public class GatewaySecurity extends SecurityManager {
     }
 
     protected void sendPubKey() {
-        sendUnsecured(pubEncryptedGatewayKey);
+        sendUnsecured(publicGatewayKey);
     }
 
     protected void receivePubKey() {
-        pubEncryptedSHDKey = receiveUnsecured();
+        publicSHDKey = receiveUnsecured();
     }
 
     public void setKey(String key) {
