@@ -5,8 +5,6 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
-import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement2;
-import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreementGateway;
 
 import java.util.Arrays;
 
@@ -29,12 +27,11 @@ public class GatewaySecurity extends SecurityManager {
         Gateway.aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(key));
 
         // do DH to establish shared key
-        DHKeyAgreement dh = new DHKeyAgreementGateway();
         receivePubKey();
-        pubEncryptedGatewayKey = DHKeyAgreement2.getPubKeyEncGW(pubEncryptedSHDKey);
+        pubEncryptedGatewayKey = DHKeyAgreement.getPubKeyEncGW(pubEncryptedSHDKey);
         sendPubKey();
-        dh.doDH(pubEncryptedSHDKey);
-        sessionKey = DHKeyAgreement2.getSharedSecretKey();
+        DHKeyAgreement.createSharedSecretB(pubEncryptedSHDKey);
+        sessionKey = DHKeyAgreement.getSharedSecretKey();
         System.out.println("Finished DH");
     }
 
