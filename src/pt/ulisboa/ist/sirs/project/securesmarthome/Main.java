@@ -1,6 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
+import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.GatewayPresentation;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.PresentationClass;
+import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SHDPresentation;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.TemperatureSensor;
 
 
@@ -28,7 +30,7 @@ public class Main {
                 throw new Exception("Wrong number of command options");
             }
             System.out.println("Initializing SHD");
-            TemperatureSensor sens = new TemperatureSensor(new PresentationClass());
+            TemperatureSensor sens = new TemperatureSensor(new SHDPresentation());
             sens.run();
         }
     }
