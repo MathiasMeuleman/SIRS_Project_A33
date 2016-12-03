@@ -22,7 +22,7 @@ public class SHDSecurity extends SecurityManager {
 
     @Override
     public void shareSessionKey() {
-        publicSHDKey = DHKeyAgreement.getPubKeyEncSHD("-gen");
+        publicSHDKey = DHKeyAgreement.getPublicSHDKey("-gen");
         sendPubKey();
         receivePubKey();
         DHKeyAgreement.createSharedSecretA(publicGatewayKey);
@@ -36,9 +36,9 @@ public class SHDSecurity extends SecurityManager {
         // generate authentication message
         byte[] authenticationMessage = Helper.getConcatPubKeys(publicSHDKey, publicGatewayKey);
         // authenticate by sending it to the other party
-        sendWithoutTimestamp(authenticationMessage);
+        sendWithoutTimestamp(authenticationMessage, aprioriSharedKey);
         // receive authentication message from Gateway
-        authenticationMessage = receiveWithoutTimestamp();
+        authenticationMessage = receiveWithoutTimestamp(aprioriSharedKey);
         if (authenticationMessage == null)
         {
             // wrong key!!!

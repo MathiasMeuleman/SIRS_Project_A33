@@ -12,8 +12,8 @@ import java.util.Arrays;
  */
 public class GatewaySecurity extends SecurityManager {
 
-    private int SHD_ID;
     private String key;
+    private int SHD_ID;
 
     public GatewaySecurity(GatewaySocketChannel channel) {
         this.commChannel = channel;
@@ -23,12 +23,12 @@ public class GatewaySecurity extends SecurityManager {
     public void shareSessionKey() {
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(key);
         // add the new input key to the list for authentication
-        SHD_ID = Gateway.aprioriSharedKeysList.size();
+        int SHD_ID = Gateway.aprioriSharedKeysList.size();
         Gateway.aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(key));
 
         // do DH to establish shared key
         receivePubKey();
-        publicGatewayKey = DHKeyAgreement.getPubKeyEncGW(publicSHDKey);
+        publicGatewayKey = DHKeyAgreement.getPublicGatewayKey(publicSHDKey);
         sendPubKey();
         DHKeyAgreement.createSharedSecretB(publicSHDKey);
         sessionKey = DHKeyAgreement.getSharedSecretKey();
@@ -38,7 +38,7 @@ public class GatewaySecurity extends SecurityManager {
     @Override
     public void authenticate() {
         // receive authentication message from SHD
-        byte[] authenticationMessage = receiveWithoutTimestamp();
+        byte[] authenticationMessage = receiveWithoutTimestamp(aprioriSharedKey);
         if (authenticationMessage == null) {
             // wrong key!!!
             Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
@@ -54,7 +54,7 @@ public class GatewaySecurity extends SecurityManager {
                 // generate authentication message
                 authenticationMessage = Helper.getConcatPubKeys(publicGatewayKey, publicSHDKey);
                 // authenticate by sending it to the other party
-                sendWithoutTimestamp(authenticationMessage);
+                sendWithoutTimestamp(authenticationMessage, aprioriSharedKey);
 
                 System.out.println("Gateway: SHD authentication succeed!");
             }
