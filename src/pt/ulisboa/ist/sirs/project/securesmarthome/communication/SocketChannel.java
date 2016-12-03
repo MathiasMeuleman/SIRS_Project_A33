@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Created by Mathias on 2016-11-27.
  */
-public class SocketChannel implements CommunicationChannel {
+public class SocketChannel {
 
     private int port;
     private ServerSocket serverSocket;
