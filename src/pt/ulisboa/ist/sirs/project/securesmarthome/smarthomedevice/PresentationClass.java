@@ -15,11 +15,11 @@ import java.util.Arrays;
 /**
  * Created by Mathias on 2016-11-21.
  */
-public class SmartHomeDevice extends Device {
+public class PresentationClass extends Device {
 
     private Instant timestampReference;
 
-    public SmartHomeDevice() {
+    public PresentationClass() {
         super();
         this.id = counter;
         counter++;
@@ -33,7 +33,7 @@ public class SmartHomeDevice extends Device {
         sendPubKey();
         receivePubKey();
         dh.doDH(pubEncryptedGatewayKey);
-        dhSharedSecretKey = DHKeyAgreement2.getSharedSecretKey();
+        sessionKey = DHKeyAgreement2.getSharedSecretKey();
         System.out.println("Finished DH");
 
         // authentication part
@@ -76,54 +76,19 @@ public class SmartHomeDevice extends Device {
     }
 
     public void makeRefTime() {
-        long reftime = Helper.bytesToLong(dhSharedSecretKey.getEncoded());
+        long reftime = Helper.bytesToLong(sessionKey.getEncoded());
         timestampReference = Instant.ofEpochMilli(reftime);
     }
 
-    public void run() {
-        Thread t = new Thread(this::temperatureSim);
-        t.start();
-    }
-
-
-    private void temperatureSim() {
-        //Simulate a temperature device :)
-        int temp = 10;
-        for (int i = 0; i <= 12; i++) {
-            String data = "" + temp;
-            byte[] dataBytes = data.getBytes();
-            byte[] toSend = addTimestamp(dataBytes);
-            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
-            commChannel.sendMessage(encrypted);
-            temp++;
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void send(byte[] data) {
+        byte[] toSend = addTimestamp(data);
+        byte[] encrypted = Cryptography.encrypt(toSend, sessionKey);
+        commChannel.sendMessage(encrypted);
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        for (int i = 0; i < 2; i++) {
-            String data = "" + temp;
-            byte[] dataBytes = data.getBytes();
-            byte[] toSend = addPhonyTimestamp(dataBytes);
-            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
-            commChannel.sendMessage(encrypted);
-        }
-        for (int i = 0; i <= 12; i++) {
-            String data = "" + temp;
-            byte[] dataBytes = data.getBytes();
-            byte[] toSend = addTimestamp(dataBytes);
-            byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
-            commChannel.sendMessage(encrypted);
-            temp--;
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        while(true);
     }
 
     /**

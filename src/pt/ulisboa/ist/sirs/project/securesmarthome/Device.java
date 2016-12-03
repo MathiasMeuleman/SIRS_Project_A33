@@ -18,10 +18,14 @@ public class Device {
         System.out.println("Running method in Device, should be Overridden in subclass");
     }
 
+    public SecretKey getSessionKey() {
+        return sessionKey;
+    }
+
     protected SHDSocketChannel commChannel;
     protected byte[] pubEncryptedSHDKey;
     protected byte[] pubEncryptedGatewayKey;
-    protected SecretKey dhSharedSecretKey;
+    protected SecretKey sessionKey;
     protected SecretKey aprioriSharedKey;
     protected byte[] authenticationMessageEncrypted;
     protected DHKeyAgreement dh;
