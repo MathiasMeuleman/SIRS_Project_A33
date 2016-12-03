@@ -17,6 +17,8 @@ import java.util.Arrays;
  */
 public class SmartHomeDevice extends Device {
 
+    private Instant timestampReference;
+
     public SmartHomeDevice() {
         super();
         this.id = counter;
@@ -36,6 +38,7 @@ public class SmartHomeDevice extends Device {
 
         // authentication part
         authenticateGateway();
+        makeRefTime();
     }
 
     public void authenticateGateway()
@@ -70,6 +73,12 @@ public class SmartHomeDevice extends Device {
                 System.out.println("SHD: Gateway authentication failed!");
             }
         }
+    }
+
+    public void makeRefTime() {
+        long reftime = Helper.bytesToLong(dhSharedSecretKey.getEncoded());
+        timestampReference = Instant.ofEpochMilli(reftime);
+        System.out.println("TimestampRef: " + reftime);
     }
 
     public void run() {

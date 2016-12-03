@@ -18,6 +18,7 @@ import java.util.Arrays;
 public class GatewayThread extends Thread {
 
     public static final long TIMESTAMP_THRESHOLD = 500;
+    private Instant timestampReference;
 
     private GatewaySocketChannel commChannel;
     private String key;
@@ -51,6 +52,7 @@ public class GatewayThread extends Thread {
 
         // authentication part of station to station
         authenticateSHD(indexOfSHD);
+        makeRefTime();
     }
 
     public void authenticateSHD(int indexOfSHD)
@@ -90,6 +92,12 @@ public class GatewayThread extends Thread {
                 System.out.println("Drop connection to that SHD!");
             }
         }
+    }
+
+    public void makeRefTime() {
+        long reftime = Helper.bytesToLong(dhSharedSecretKey.getEncoded());
+        timestampReference = Instant.ofEpochMilli(reftime);
+        System.out.println("Timestampref: " + reftime);
     }
 
     public void tempSim() {
