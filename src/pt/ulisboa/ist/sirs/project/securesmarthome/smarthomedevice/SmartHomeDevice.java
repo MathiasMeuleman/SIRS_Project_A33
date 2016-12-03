@@ -1,8 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Device;
+import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SHDSocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement2;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreementSHD;
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
@@ -16,9 +16,12 @@ import java.util.Arrays;
  */
 public class SmartHomeDevice extends Device {
 
-    public SmartHomeDevice(CommunicationMode commMode) {
-        super(commMode);
+    public SmartHomeDevice() {
+        super();
+        this.id = counter;
+        counter++;
 
+        commChannel = new SHDSocketChannel();
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(printedKey);
 
         // Get all public keys
@@ -155,8 +158,15 @@ public class SmartHomeDevice extends Device {
         pubEncryptedGatewayKey = commChannel.receiveByteArray();
     }
 
+    public int getId() {
+        return id;
+    }
+
     // This 16 byte key is printed on the smartHomeDevice
     String printedKey = "ABCDEFGHIJKLMNOP";
 
+
+    private static int counter = 0;
     private boolean authenticatedGateway;
+    private int id;
 }

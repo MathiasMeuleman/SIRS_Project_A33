@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
+import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SHDSocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
 
 import javax.crypto.SecretKey;
@@ -9,19 +8,17 @@ import javax.crypto.SecretKey;
 /**
  * Created by Alex Anders on 21/11/2016.
  */
-public class Device implements Runnable {
+public class Device {
 
-    public Device(CommunicationMode commMode) {
+    public Device() {
 
-        // setup channel
-        commChannel = new SocketChannel(commMode);
     }
 
     public void run() {
         System.out.println("Running method in Device, should be Overridden in subclass");
     }
 
-    protected SocketChannel commChannel;
+    protected SHDSocketChannel commChannel;
     protected byte[] pubEncryptedSHDKey;
     protected byte[] pubEncryptedGatewayKey;
     protected SecretKey dhSharedSecretKey;

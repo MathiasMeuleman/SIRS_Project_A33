@@ -1,5 +1,4 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.CommunicationMode;
 import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SmartHomeDevice;
 
@@ -19,7 +18,7 @@ public class Main {
                 throw new Exception("Wrong number of command options");
             }
             System.out.println("Initializing gateway");
-            Gateway gateway = new Gateway(CommunicationMode.GATEWAY, args[1]);
+            Gateway gateway = new Gateway(args[1]);
             gateway.run();
         }
 
@@ -28,7 +27,7 @@ public class Main {
                 throw new Exception("Wrong number of command options");
             }
             System.out.println("Initializing SHD");
-            SmartHomeDevice smartHomeDevice = new SmartHomeDevice(CommunicationMode.SHD);
+            SmartHomeDevice smartHomeDevice = new SmartHomeDevice();
             smartHomeDevice.run();
         }
     }
