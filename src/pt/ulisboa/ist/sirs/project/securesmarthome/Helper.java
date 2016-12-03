@@ -4,6 +4,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 
 /**
  * Created by Alex Anders on 21/11/2016.
@@ -65,7 +66,7 @@ public class Helper {
      * @return
      */
     public static long bytesToLong(byte[] bytes) {
-        buffer.put(bytes);
+        buffer.put(bytes, 0, Long.BYTES);
         buffer.flip();//need flip
         long res = buffer.getLong();
         buffer.clear();

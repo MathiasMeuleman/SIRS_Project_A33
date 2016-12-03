@@ -10,7 +10,8 @@ import java.util.Arrays;
  */
 public class SHDSocketChannel {
 
-    private String address = "194.210.132.251";
+//    private String address = "194.210.132.251";
+    private String address = "localhost";
     private Socket clientSocket;
     private DataInputStream inStream;
     private DataOutputStream outStream;

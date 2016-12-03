@@ -97,7 +97,6 @@ public class GatewayThread extends Thread {
     public void makeRefTime() {
         long reftime = Helper.bytesToLong(dhSharedSecretKey.getEncoded());
         timestampReference = Instant.ofEpochMilli(reftime);
-        System.out.println("Timestampref: " + reftime);
     }
 
     public void tempSim() {
@@ -133,9 +132,9 @@ public class GatewayThread extends Thread {
     }
 
     private boolean checkTimestamp(long timestamp) {
-        Instant inst = Instant.now();
-        long current = inst.toEpochMilli();
-        if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
+        long reference = timestampReference.toEpochMilli() + timestamp;
+        long current = Instant.now().toEpochMilli();
+        if(current - reference > TIMESTAMP_THRESHOLD || reference > current)
             return false;
         return true;
     }

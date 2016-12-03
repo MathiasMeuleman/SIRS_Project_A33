@@ -78,7 +78,6 @@ public class SmartHomeDevice extends Device {
     public void makeRefTime() {
         long reftime = Helper.bytesToLong(dhSharedSecretKey.getEncoded());
         timestampReference = Instant.ofEpochMilli(reftime);
-        System.out.println("TimestampRef: " + reftime);
     }
 
     public void run() {
@@ -134,7 +133,7 @@ public class SmartHomeDevice extends Device {
      */
     public byte[] addTimestamp(byte[] data) {
         Instant inst = Instant.now();
-        long timestamp = inst.toEpochMilli();
+        long timestamp = inst.toEpochMilli() - timestampReference.toEpochMilli();
         byte[] stampBytes = Helper.longToBytes(timestamp);
         int size = data.length + stampBytes.length;
         byte[] toSend = new byte[size];
