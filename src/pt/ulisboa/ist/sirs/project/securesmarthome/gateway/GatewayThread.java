@@ -9,6 +9,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreeme
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreementGateway;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Arrays;
 
 /**
@@ -124,7 +125,8 @@ public class GatewayThread extends Thread {
     }
 
     private boolean checkTimestamp(long timestamp) {
-        long current = System.currentTimeMillis();
+        Instant inst = Instant.now();
+        long current = inst.toEpochMilli();
         if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
             return false;
         return true;

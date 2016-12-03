@@ -8,6 +8,7 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreeme
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
+import java.time.Instant;
 import java.util.Arrays;
 
 
@@ -44,7 +45,7 @@ public class SmartHomeDevice extends Device {
         // encrypt authentication message
         authenticationMessageEncrypted = Cryptography.encrypt(authenticationMessage, aprioriSharedKey);
         // authenticate by sending it to the other party
-        commChannel.sendMessage("localhost:11000",authenticationMessageEncrypted);
+        commChannel.sendMessage(authenticationMessageEncrypted);
         // receive authentication message from Gateway
         authenticationMessageEncrypted = commChannel.receiveByteArray();
         // decrypt it
@@ -85,7 +86,7 @@ public class SmartHomeDevice extends Device {
             byte[] dataBytes = data.getBytes();
             byte[] toSend = addTimestamp(dataBytes);
             byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
-            commChannel.sendMessage("localhost:11000", encrypted);
+            commChannel.sendMessage(encrypted);
             temp++;
             try {
                 Thread.sleep(300);
@@ -98,14 +99,14 @@ public class SmartHomeDevice extends Device {
             byte[] dataBytes = data.getBytes();
             byte[] toSend = addPhonyTimestamp(dataBytes);
             byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
-            commChannel.sendMessage("localhost:11000", encrypted);
+            commChannel.sendMessage(encrypted);
         }
         for (int i = 0; i <= 12; i++) {
             String data = "" + temp;
             byte[] dataBytes = data.getBytes();
             byte[] toSend = addTimestamp(dataBytes);
             byte[] encrypted = Cryptography.encrypt(toSend, dhSharedSecretKey);
-            commChannel.sendMessage("localhost:11000", encrypted);
+            commChannel.sendMessage(encrypted);
             temp--;
             try {
                 Thread.sleep(300);
@@ -123,7 +124,8 @@ public class SmartHomeDevice extends Device {
      * @return
      */
     public byte[] addTimestamp(byte[] data) {
-        long timestamp = System.currentTimeMillis();
+        Instant inst = Instant.now();
+        long timestamp = inst.toEpochMilli();
         byte[] stampBytes = Helper.longToBytes(timestamp);
         int size = data.length + stampBytes.length;
         byte[] toSend = new byte[size];
@@ -137,7 +139,8 @@ public class SmartHomeDevice extends Device {
     }
 
     public byte[] addPhonyTimestamp(byte[] data) {
-        long timestamp = System.currentTimeMillis() + 1200000;
+        Instant inst = Instant.now();
+        long timestamp = inst.toEpochMilli() + 1200000;
         byte[] stampBytes = Helper.longToBytes(timestamp);
         int size = data.length + stampBytes.length;
         byte[] toSend = new byte[size];
@@ -151,7 +154,7 @@ public class SmartHomeDevice extends Device {
     }
 
     private void sendPubKey() {
-        commChannel.sendMessage("localhost:11000", pubEncryptedSHDKey);
+        commChannel.sendMessage(pubEncryptedSHDKey);
     }
 
     private void receivePubKey() {

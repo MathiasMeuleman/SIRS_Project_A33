@@ -10,13 +10,14 @@ import java.util.Arrays;
  */
 public class SHDSocketChannel {
 
+    private String address = "194.210.132.251";
     private Socket clientSocket;
     private DataInputStream inStream;
     private DataOutputStream outStream;
 
     public SHDSocketChannel() {
         try {
-            clientSocket = new Socket("localhost", 11000);
+            clientSocket = new Socket(address, 11000);
             outStream = new DataOutputStream(clientSocket.getOutputStream());
             inStream = new DataInputStream(clientSocket.getInputStream());
         } catch (IOException e) {
@@ -24,7 +25,7 @@ public class SHDSocketChannel {
         }
     }
 
-    public void sendMessage(String dest, byte[] message) {
+    public void sendMessage(byte[] message) {
         try {
             outStream.writeInt(message.length);
             outStream.write(message);
