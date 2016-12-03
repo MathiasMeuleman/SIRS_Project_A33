@@ -1,10 +1,6 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
-
-import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
 
 /**
  * Created by Alex Anders on 21/11/2016.

@@ -2,8 +2,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
-import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement2;
-import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreementSHD;
+import pt.ulisboa.ist.sirs.project.securesmarthome.DHKeyAgreement;
 
 import java.util.Arrays;
 
@@ -18,12 +17,11 @@ public class SHDSecurity extends SecurityManager {
 
     @Override
     public void shareSessionKey() {
-        dh = new DHKeyAgreementSHD();
-        pubEncryptedSHDKey = DHKeyAgreement2.getPubKeyEncSHD("-gen");
+        pubEncryptedSHDKey = DHKeyAgreement.getPubKeyEncSHD("-gen");
         sendPubKey();
         receivePubKey();
-        dh.doDH(pubEncryptedGatewayKey);
-        sessionKey = DHKeyAgreement2.getSharedSecretKey();
+        DHKeyAgreement.createSharedSecretA(pubEncryptedGatewayKey);
+        sessionKey = DHKeyAgreement.getSharedSecretKey();
         System.out.println("Finished DH");
     }
 

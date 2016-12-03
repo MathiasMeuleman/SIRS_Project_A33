@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 /*
  * Based on Oracle software:
@@ -52,7 +52,7 @@ import java.security.spec.X509EncodedKeySpec;
  * parameters is created.
  */
 
-public class DHKeyAgreement2 {
+public class DHKeyAgreement {
 
     public static byte[] getPubKeyEncSHD(String argv) {
         try {
@@ -162,7 +162,7 @@ public class DHKeyAgreement2 {
         return bobPubKeyEnc;
     }
 
-    public static void createSharedSecretA(byte[] pubKeyEncBob) throws Exception {
+    public static void createSharedSecretA(byte[] pubKeyEncBob) {
         /*
          * Alice uses Bob's public key for the first (and only) phase
          * of her version of the DH
@@ -170,16 +170,20 @@ public class DHKeyAgreement2 {
          * Before she can do so, she has to instantiate a DH public key
          * from Bob's encoded key material.
          */
-        KeyFactory aliceKeyFac = KeyFactory.getInstance("DH");
-        x509KeySpec = new X509EncodedKeySpec(pubKeyEncBob);
-        PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
-        System.out.println("ALICE: Execute PHASE1 ...");
-        aliceKeyAgree.doPhase(bobPubKey, true);
-        sharedSecretKey = aliceKeyAgree.generateSecret("AES");
-        resizeKey();
+        try {
+            KeyFactory aliceKeyFac = KeyFactory.getInstance("DH");
+            x509KeySpec = new X509EncodedKeySpec(pubKeyEncBob);
+            PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
+            System.out.println("ALICE: Execute PHASE1 ...");
+            aliceKeyAgree.doPhase(bobPubKey, true);
+            sharedSecretKey = aliceKeyAgree.generateSecret("AES");
+            resizeKey();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void createSharedSecretB(byte[] pubKeyEncAlice) throws Exception {
+    public static void createSharedSecretB(byte[] pubKeyEncAlice) {
         /*
          * Bob uses Alice's public key for the first (and only) phase
          * of his version of the DH
@@ -189,13 +193,17 @@ public class DHKeyAgreement2 {
          * Actually he has done this already before, but to keep the code clearer
          * it is solved this way.
          */
-        KeyFactory bobKeyFac = KeyFactory.getInstance("DH");
-        x509KeySpec = new X509EncodedKeySpec(pubKeyEncAlice);
-        PublicKey alicePubKey = bobKeyFac.generatePublic(x509KeySpec);
-        System.out.println("BOB: Execute PHASE1 ...");
-        bobKeyAgree.doPhase(alicePubKey, true);
-        sharedSecretKey = bobKeyAgree.generateSecret("AES");
-        resizeKey();
+        try {
+            KeyFactory bobKeyFac = KeyFactory.getInstance("DH");
+            x509KeySpec = new X509EncodedKeySpec(pubKeyEncAlice);
+            PublicKey alicePubKey = bobKeyFac.generatePublic(x509KeySpec);
+            System.out.println("BOB: Execute PHASE1 ...");
+            bobKeyAgree.doPhase(alicePubKey, true);
+            sharedSecretKey = bobKeyAgree.generateSecret("AES");
+            resizeKey();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

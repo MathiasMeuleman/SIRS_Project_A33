@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
-import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
 import javax.crypto.SecretKey;
@@ -21,7 +19,6 @@ public abstract class SecurityManager {
     protected byte[] pubEncryptedGatewayKey;
     protected SecretKey sessionKey;
     protected SecretKey aprioriSharedKey;
-    protected DHKeyAgreement dh;
     protected byte[] authenticationMessage;
 
     public SecurityManager() {
