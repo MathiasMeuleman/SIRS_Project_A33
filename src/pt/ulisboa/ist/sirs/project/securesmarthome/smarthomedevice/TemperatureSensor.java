@@ -5,9 +5,9 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
  */
 public class TemperatureSensor {
 
-    private SHDPresentation presentation;
+    private SHDSecurity presentation;
 
-    public TemperatureSensor(SHDPresentation presentation) {
+    public TemperatureSensor(SHDSecurity presentation) {
         this.presentation = presentation;
     }
 

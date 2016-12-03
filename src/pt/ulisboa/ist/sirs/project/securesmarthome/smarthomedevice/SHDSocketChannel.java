@@ -1,9 +1,9 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.communication;
+package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
+
+import pt.ulisboa.ist.sirs.project.securesmarthome.SocketChannel;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 
 /**
  * Created by Mathias on 2016-11-27.

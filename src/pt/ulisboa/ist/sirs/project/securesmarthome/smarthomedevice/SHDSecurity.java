@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SHDSocketChannel;
+import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement2;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreementSHD;
 
@@ -10,9 +10,9 @@ import java.util.Arrays;
 /**
  * Created by Mathias on 2016-12-03.
  */
-public class SHDPresentation extends PresentationClass {
+public class SHDSecurity extends SecurityManager {
 
-    public SHDPresentation() {
+    public SHDSecurity() {
         this.commChannel = new SHDSocketChannel();
     }
 

@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.communication;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

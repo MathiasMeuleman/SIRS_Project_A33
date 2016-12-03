@@ -1,7 +1,5 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.SocketChannel;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
 import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
@@ -13,21 +11,20 @@ import java.time.Instant;
 /**
  * Created by Mathias on 2016-11-21.
  */
-public abstract class PresentationClass {
+public abstract class SecurityManager {
 
     private static final long TIMESTAMP_THRESHOLD = Long.MAX_VALUE;
 
     private Instant timestampReference;
-    SocketChannel commChannel;
-    byte[] pubEncryptedSHDKey;
-    byte[] pubEncryptedGatewayKey;
-    SecretKey sessionKey;
-    SecretKey aprioriSharedKey;
-    byte[] authenticationMessageEncrypted;
-    DHKeyAgreement dh;
-    byte[] authenticationMessage;
+    protected SocketChannel commChannel;
+    protected byte[] pubEncryptedSHDKey;
+    protected byte[] pubEncryptedGatewayKey;
+    protected SecretKey sessionKey;
+    protected SecretKey aprioriSharedKey;
+    protected DHKeyAgreement dh;
+    protected byte[] authenticationMessage;
 
-    public PresentationClass() {
+    public SecurityManager() {
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(printedKey);
     }
 

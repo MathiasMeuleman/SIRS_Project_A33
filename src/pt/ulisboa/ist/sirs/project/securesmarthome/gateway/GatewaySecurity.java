@@ -1,11 +1,8 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
+package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
 
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
-import pt.ulisboa.ist.sirs.project.securesmarthome.communication.GatewaySocketChannel;
-import pt.ulisboa.ist.sirs.project.securesmarthome.encryption.Cryptography;
-import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.AuthenticatedSHD;
-import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
+import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement;
 import pt.ulisboa.ist.sirs.project.securesmarthome.stationtostation.DHKeyAgreement2;
@@ -16,12 +13,12 @@ import java.util.Arrays;
 /**
  * Created by Mathias on 2016-12-03.
  */
-public class GatewayPresentation extends PresentationClass {
+public class GatewaySecurity extends SecurityManager {
 
     private int SHD_ID;
     private String key;
 
-    public GatewayPresentation(GatewaySocketChannel channel) {
+    public GatewaySecurity(GatewaySocketChannel channel) {
         this.commChannel = channel;
     }
 

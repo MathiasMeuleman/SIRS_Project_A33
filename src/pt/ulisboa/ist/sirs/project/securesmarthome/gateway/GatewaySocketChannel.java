@@ -1,4 +1,6 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.communication;
+package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
+
+import pt.ulisboa.ist.sirs.project.securesmarthome.SocketChannel;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
