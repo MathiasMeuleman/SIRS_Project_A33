@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
-
 import javax.crypto.SecretKey;
 import java.time.Instant;
 
@@ -15,14 +13,13 @@ public abstract class SecurityManager {
 
     private Instant timestampReference;
     protected SocketChannel commChannel;
-    protected byte[] pubEncryptedSHDKey;
-    protected byte[] pubEncryptedGatewayKey;
+    protected byte[] publicSHDKey;
+    protected byte[] publicGatewayKey;
     protected SecretKey sessionKey;
     protected SecretKey aprioriSharedKey;
-    protected byte[] authenticationMessage;
 
     public SecurityManager() {
-        aprioriSharedKey = AESSecretKeyFactory.createSecretKey(printedKey);
+
     }
 
     public void connectToDevice() {
@@ -129,8 +126,4 @@ public abstract class SecurityManager {
             return false;
         return true;
     }
-
-    // This 16 byte key is printed on the smartHomeDevice
-    String printedKey = "ABCDEFGHIJKLMNOP";
-
 }

@@ -3,6 +3,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.DHKeyAgreement;
+import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
 
 import java.util.Arrays;
 
@@ -11,16 +12,20 @@ import java.util.Arrays;
  */
 public class SHDSecurity extends SecurityManager {
 
+    // This 16 byte key is printed on the smartHomeDevice
+    String printedKey = "ABCDEFGHIJKLMNOP";
+
     public SHDSecurity() {
         this.commChannel = new SHDSocketChannel();
+        aprioriSharedKey = AESSecretKeyFactory.createSecretKey(printedKey);
     }
 
     @Override
     public void shareSessionKey() {
-        pubEncryptedSHDKey = DHKeyAgreement.getPubKeyEncSHD("-gen");
+        publicSHDKey = DHKeyAgreement.getPubKeyEncSHD("-gen");
         sendPubKey();
         receivePubKey();
-        DHKeyAgreement.createSharedSecretA(pubEncryptedGatewayKey);
+        DHKeyAgreement.createSharedSecretA(publicGatewayKey);
         sessionKey = DHKeyAgreement.getSharedSecretKey();
         System.out.println("Finished DH");
     }
@@ -29,7 +34,7 @@ public class SHDSecurity extends SecurityManager {
     public void authenticate()
     {
         // generate authentication message
-        authenticationMessage = Helper.getConcatPubKeys(pubEncryptedSHDKey, pubEncryptedGatewayKey);
+        byte[] authenticationMessage = Helper.getConcatPubKeys(publicSHDKey, publicGatewayKey);
         // authenticate by sending it to the other party
         sendWithoutTimestamp(authenticationMessage);
         // receive authentication message from Gateway
@@ -41,7 +46,7 @@ public class SHDSecurity extends SecurityManager {
         }
         else {
             // compare with concatenated keys
-            byte[] concatKeys = Helper.getConcatPubKeys(pubEncryptedGatewayKey, pubEncryptedSHDKey);
+            byte[] concatKeys = Helper.getConcatPubKeys(publicGatewayKey, publicSHDKey);
             if (Arrays.equals(authenticationMessage, concatKeys)) {
                 System.out.println("SHD: Gateway authentication succeed!");
             }
@@ -54,10 +59,10 @@ public class SHDSecurity extends SecurityManager {
     }
 
     protected void sendPubKey() {
-        sendUnsecured(pubEncryptedSHDKey);
+        sendUnsecured(publicSHDKey);
     }
 
     protected void receivePubKey() {
-        pubEncryptedGatewayKey = receiveUnsecured();
+        publicGatewayKey = receiveUnsecured();
     }
 }
