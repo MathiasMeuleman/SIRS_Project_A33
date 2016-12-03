@@ -38,8 +38,12 @@ public abstract class SecurityManager {
     }
 
     public void send(byte[] data) {
+        send(data, sessionKey);
+    }
+
+    public void send(byte[] data, SecretKey key) {
         byte[] toSend = addTimestamp(data);
-        byte[] encrypted = Cryptography.encrypt(toSend, sessionKey);
+        byte[] encrypted = Cryptography.encrypt(toSend, key);
         commChannel.sendMessage(encrypted);
         try {
             Thread.sleep(300);
@@ -49,7 +53,11 @@ public abstract class SecurityManager {
     }
 
     public void sendWithoutTimestamp(byte[] data) {
-        byte[] encrypted = Cryptography.encrypt(data, sessionKey);
+        sendWithoutTimestamp(data, sessionKey);
+    }
+
+    public void sendWithoutTimestamp(byte[] data, SecretKey key) {
+        byte[] encrypted = Cryptography.encrypt(data, key);
         commChannel.sendMessage(encrypted);
         try {
             Thread.sleep(300);
@@ -63,8 +71,12 @@ public abstract class SecurityManager {
     }
 
     public byte[] receive() {
+        return receive(sessionKey);
+    }
+
+    public byte[] receive(SecretKey key) {
         byte[] encrypted = commChannel.receiveByteArray();
-        byte[] received = Cryptography.decrypt(encrypted, sessionKey);
+        byte[] received = Cryptography.decrypt(encrypted, key);
         long timestamp = retrieveTimestamp(received);
         if(checkTimestamp(timestamp)) {
             return retrieveData(received);
@@ -73,8 +85,12 @@ public abstract class SecurityManager {
     }
 
     public byte[] receiveWithoutTimestamp() {
+        return receiveWithoutTimestamp(sessionKey);
+    }
+
+    public byte[] receiveWithoutTimestamp(SecretKey key) {
         byte[] encrypted = commChannel.receiveByteArray();
-        byte[] received = Cryptography.decrypt(encrypted, sessionKey);
+        byte[] received = Cryptography.decrypt(encrypted, key);
         return received;
     }
 

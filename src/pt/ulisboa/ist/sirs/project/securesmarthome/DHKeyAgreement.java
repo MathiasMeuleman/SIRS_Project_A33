@@ -54,7 +54,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class DHKeyAgreement {
 
-    public static byte[] getPubKeyEncSHD(String argv) {
+    public static byte[] getPublicSHDKey(String argv) {
         try {
             String paramsMode = "USE_SKIP_DH_PARAMS";
 
@@ -76,7 +76,7 @@ public class DHKeyAgreement {
         }
     }
 
-    public static byte[] getPubKeyEncGW(byte[] pubKeyEncAlice) {
+    public static byte[] getPublicGatewayKey(byte[] pubKeyEncAlice) {
         try {
             // generating pubKeyEncBob
             byte[] pubKeyEncB = getPubKeyEncBob(pubKeyEncAlice);
