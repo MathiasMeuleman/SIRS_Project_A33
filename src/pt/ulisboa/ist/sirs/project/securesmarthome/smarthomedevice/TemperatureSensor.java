@@ -17,26 +17,26 @@ public class TemperatureSensor {
     }
 
     private void temperatureSim() {
-        //Simulate a temperature device :)
-        int temp = 10;
-        for (int i = 0; i <= 12; i++) {
-            String data = "" + temp;
-            byte[] dataBytes = data.getBytes();
-            security.send(dataBytes);
-            temp++;
-        }
-        for (int i = 0; i <= 12; i++) {
-            String data = "" + temp;
-            byte[] dataBytes = data.getBytes();
-            security.send(dataBytes);
-            temp--;
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        while(true) {
+            //Simulate a temperature device :)
+            int temp = 10;
+            for (int i = 0; i <= 12; i++) {
+                String data = "" + temp;
+                byte[] dataBytes = data.getBytes();
+                security.send(dataBytes);
+                temp++;
+            }
+            for (int i = 0; i <= 12; i++) {
+                String data = "" + temp;
+                byte[] dataBytes = data.getBytes();
+                security.send(dataBytes);
+                temp--;
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
-        while(true);
     }
 }

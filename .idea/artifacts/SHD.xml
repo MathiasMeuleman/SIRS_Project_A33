@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SHD">
+    <output-path>$PROJECT_DIR$/out/artifacts/SHD</output-path>
+    <root id="archive" name="SIRS_Project_A33.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/pt/ulisboa/ist/sirs/project/securesmarthome/smarthomedevice/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="SIRS_Project_A33" />
+    </root>
+  </artifact>
+</component>
