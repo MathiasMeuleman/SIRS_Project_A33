@@ -10,7 +10,7 @@ import java.net.Socket;
  */
 public class SHDSocketChannel extends SocketChannel {
 
-//    private String address = "194.210.132.251";
+//    private String address = "194.210.178.241";
     private String address = "localhost";
     private Socket clientSocket;
 

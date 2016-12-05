@@ -95,7 +95,7 @@ public class DHKeyAgreement {
         if (mode.equals("GENERATE_DH_PARAMS")) {
             // Some central authority creates new DH parameters
             System.out.println
-                    ("Creating Diffie-Hellman parameters (takes VERY long) ...");
+                    ("Creating Diffie-Hellman parameters");
             AlgorithmParameterGenerator paramGen
                     = AlgorithmParameterGenerator.getInstance("DH");
             paramGen.init(512);
@@ -113,13 +113,11 @@ public class DHKeyAgreement {
          * Alice creates her own DH key pair, using the DH parameters from
          * above
          */
-        System.out.println("ALICE: Generate DH keypair ...");
         KeyPairGenerator aliceKpairGen = KeyPairGenerator.getInstance("DH");
         aliceKpairGen.initialize(dhSkipParamSpec);
         KeyPair aliceKpair = aliceKpairGen.generateKeyPair();
 
         // Alice creates and initializes her DH KeyAgreement object
-        System.out.println("ALICE: Initialization ...");
         aliceKeyAgree = KeyAgreement.getInstance("DH");
         aliceKeyAgree.init(aliceKpair.getPrivate(), dhSkipParamSpec);
 
@@ -147,13 +145,11 @@ public class DHKeyAgreement {
         DHParameterSpec dhParamSpec = ((DHPublicKey) alicePubKey).getParams();
 
         // Bob creates his own DH key pair
-        System.out.println("BOB: Generate DH keypair ...");
         KeyPairGenerator bobKpairGen = KeyPairGenerator.getInstance("DH");
         bobKpairGen.initialize(dhParamSpec);
         KeyPair bobKpair = bobKpairGen.generateKeyPair();
 
         // Bob creates and initializes his DH KeyAgreement object
-        System.out.println("BOB: Initialization ...");
         bobKeyAgree = KeyAgreement.getInstance("DH");
         bobKeyAgree.init(bobKpair.getPrivate());
 
@@ -174,7 +170,6 @@ public class DHKeyAgreement {
             KeyFactory aliceKeyFac = KeyFactory.getInstance("DH");
             x509KeySpec = new X509EncodedKeySpec(pubKeyEncBob);
             PublicKey bobPubKey = aliceKeyFac.generatePublic(x509KeySpec);
-            System.out.println("ALICE: Execute PHASE1 ...");
             aliceKeyAgree.doPhase(bobPubKey, true);
             sharedSecretKey = aliceKeyAgree.generateSecret("AES");
             resizeKey();
@@ -197,7 +192,6 @@ public class DHKeyAgreement {
             KeyFactory bobKeyFac = KeyFactory.getInstance("DH");
             x509KeySpec = new X509EncodedKeySpec(pubKeyEncAlice);
             PublicKey alicePubKey = bobKeyFac.generatePublic(x509KeySpec);
-            System.out.println("BOB: Execute PHASE1 ...");
             bobKeyAgree.doPhase(alicePubKey, true);
             sharedSecretKey = bobKeyAgree.generateSecret("AES");
             resizeKey();

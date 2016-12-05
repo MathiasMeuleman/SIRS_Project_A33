@@ -3,6 +3,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 import javax.crypto.SecretKey;
 import java.net.SocketException;
 import java.time.Instant;
+import java.util.Arrays;
 
 
 /**
@@ -46,6 +47,7 @@ public abstract class SecurityManager {
         byte[] toSend = addTimestamp(data);
         byte[] encrypted = Cryptography.encrypt(toSend, key, mode);
         try {
+            System.out.println("ToSend: " + Arrays.toString(encrypted));
             commChannel.sendMessage(encrypted);
         } catch (SocketException e) {
             e.printStackTrace();
@@ -66,6 +68,8 @@ public abstract class SecurityManager {
         long timestamp = retrieveTimestamp(received);
         if(checkTimestamp(timestamp)) {
             return retrieveData(received);
+        } else {
+            System.out.println("Timestamp check failed");
         }
         return null;
     }
@@ -81,6 +85,9 @@ public abstract class SecurityManager {
             long timestamp = retrieveTimestamp(received);
             if(checkTimestamp(timestamp)) {
                 return retrieveData(received);
+            } else {
+                System.out.println("Timestamp check failed");
+                return null;
             }
         } catch (SocketException e) {
             e.printStackTrace();
