@@ -3,7 +3,7 @@ package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
-import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
+import pt.ulisboa.ist.sirs.project.securesmarthome.AESSecretKeyFactory;
 import pt.ulisboa.ist.sirs.project.securesmarthome.DHKeyAgreement;
 
 import java.security.SecureRandom;
