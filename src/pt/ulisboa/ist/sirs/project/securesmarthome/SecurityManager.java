@@ -117,7 +117,7 @@ public abstract class SecurityManager {
     public void initTimestamp() {
         try {
             NTPUDPClient timeClient = new NTPUDPClient();
-            InetAddress address = InetAddress.getByAddress(TIME_SERVER.getBytes());
+            InetAddress address = InetAddress.getByName(TIME_SERVER);
             TimeInfo info = timeClient.getTime(address);
             long exactTime = info.getReturnTime();
             long currentTime = System.currentTimeMillis();
