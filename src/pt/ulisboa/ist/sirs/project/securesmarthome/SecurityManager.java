@@ -135,6 +135,9 @@ public abstract class SecurityManager {
 
     private boolean checkTimestamp(long timestamp) {
         long current = Instant.now().toEpochMilli();
+        System.out.println("Timestamp check: ");
+        System.out.println("Received: " + timestamp);
+        System.out.println("Current: " + current);
         if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
             return false;
         return true;
