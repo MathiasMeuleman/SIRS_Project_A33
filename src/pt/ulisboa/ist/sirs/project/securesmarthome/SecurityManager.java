@@ -1,10 +1,16 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
+
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
 import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.Arrays;
-
 
 /**
  * Created by Mathias on 2016-11-21.
@@ -13,6 +19,8 @@ public abstract class SecurityManager {
 
     private static final long TIMESTAMP_THRESHOLD = Long.MAX_VALUE;
 
+    protected final String TIME_SERVER = "utcnist.colorado.edu";
+    protected long timeRef;
     protected SocketChannel commChannel;
     protected byte[] publicSHDKey;
     protected byte[] publicGatewayKey;
@@ -25,6 +33,8 @@ public abstract class SecurityManager {
 
     public void connectToDevice() {
         shareSessionKey();
+        initTimestamp();
+        System.out.println("TimeRef: " + timeRef);
         shareIV();
         authenticate();
     }
@@ -104,11 +114,21 @@ public abstract class SecurityManager {
         return null;
     }
 
-    /**
-     * Prepend current timestamp to the data
-     * @param data
-     * @return
-     */
+    public void initTimestamp() {
+        try {
+            NTPUDPClient timeClient = new NTPUDPClient();
+            InetAddress address = InetAddress.getByAddress(TIME_SERVER.getBytes());
+            TimeInfo info = timeClient.getTime(address);
+            long exactTime = info.getReturnTime();
+            long currentTime = System.currentTimeMillis();
+            timeRef = currentTime - exactTime;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public byte[] addTimestamp(byte[] data) {
         Instant inst = Instant.now();
         long timestamp = inst.toEpochMilli();
