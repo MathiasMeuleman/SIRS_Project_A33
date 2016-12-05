@@ -1,9 +1,10 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice;
 
+import pt.ulisboa.ist.sirs.project.securesmarthome.Cryptography;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.DHKeyAgreement;
-import pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement.AESSecretKeyFactory;
+import pt.ulisboa.ist.sirs.project.securesmarthome.AESSecretKeyFactory;
 
 import java.util.Arrays;
 
@@ -31,14 +32,20 @@ public class SHDSecurity extends SecurityManager {
     }
 
     @Override
+    public void shareIV() {
+        byte[] iv = receiveEncrypted("ECB");
+        Cryptography.setIV(iv);
+    }
+
+    @Override
     public void authenticate()
     {
         // generate authentication message
         byte[] authenticationMessage = Helper.getConcatPubKeys(publicSHDKey, publicGatewayKey);
         // authenticate by sending it to the other party
-        sendWithoutTimestamp(authenticationMessage, aprioriSharedKey);
+        sendEncrypted(authenticationMessage, aprioriSharedKey, "CBC");
         // receive authentication message from Gateway
-        authenticationMessage = receiveWithoutTimestamp(aprioriSharedKey);
+        authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
         if (authenticationMessage == null)
         {
             // wrong key!!!

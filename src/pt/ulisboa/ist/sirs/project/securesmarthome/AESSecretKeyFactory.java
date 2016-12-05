@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.sirs.project.securesmarthome.keymanagement;
+package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;

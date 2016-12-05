@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import javax.crypto.SecretKey;
+import java.net.SocketException;
 import java.time.Instant;
 
 
@@ -11,7 +12,6 @@ public abstract class SecurityManager {
 
     private static final long TIMESTAMP_THRESHOLD = Long.MAX_VALUE;
 
-    private Instant timestampReference;
     protected SocketChannel commChannel;
     protected byte[] publicSHDKey;
     protected byte[] publicGatewayKey;
@@ -23,60 +23,46 @@ public abstract class SecurityManager {
     }
 
     public void connectToDevice() {
-        // Station-to-Station
         shareSessionKey();
+        shareIV();
         authenticate();
-        makeRefTime();
     }
 
     public abstract void shareSessionKey();
+    public abstract void shareIV();
     public abstract void authenticate();
 
-    public void makeRefTime() {
-        long reftime = Helper.bytesToLong(sessionKey.getEncoded());
-        timestampReference = Instant.ofEpochMilli(reftime);
-    }
-
-    public void send(byte[] data) {
-        send(data, sessionKey);
-    }
-
-    public void send(byte[] data, SecretKey key) {
+    public void send(byte[] data) throws SocketException {
         byte[] toSend = addTimestamp(data);
-        byte[] encrypted = Cryptography.encrypt(toSend, key);
+        byte[] encrypted = Cryptography.encrypt(toSend, sessionKey, "CBC");
         commChannel.sendMessage(encrypted);
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void sendWithoutTimestamp(byte[] data) {
-        sendWithoutTimestamp(data, sessionKey);
+    public void sendEncrypted(byte[] data, String mode) {
+        sendEncrypted(data, sessionKey, mode);
     }
 
-    public void sendWithoutTimestamp(byte[] data, SecretKey key) {
-        byte[] encrypted = Cryptography.encrypt(data, key);
-        commChannel.sendMessage(encrypted);
+    public void sendEncrypted(byte[] data, SecretKey key, String mode) {
+        byte[] toSend = addTimestamp(data);
+        byte[] encrypted = Cryptography.encrypt(toSend, key, mode);
         try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
+            commChannel.sendMessage(encrypted);
+        } catch (SocketException e) {
             e.printStackTrace();
         }
     }
 
     public void sendUnsecured(byte[] data) {
-        commChannel.sendMessage(data);
+        try {
+            commChannel.sendMessage(data);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
-    public byte[] receive() {
-        return receive(sessionKey);
-    }
-
-    public byte[] receive(SecretKey key) {
+    public byte[] receive() throws SocketException {
         byte[] encrypted = commChannel.receiveByteArray();
-        byte[] received = Cryptography.decrypt(encrypted, key);
+        byte[] received = Cryptography.decrypt(encrypted, sessionKey, "CBC");
         long timestamp = retrieveTimestamp(received);
         if(checkTimestamp(timestamp)) {
             return retrieveData(received);
@@ -84,19 +70,31 @@ public abstract class SecurityManager {
         return null;
     }
 
-    public byte[] receiveWithoutTimestamp() {
-        return receiveWithoutTimestamp(sessionKey);
+    public byte[] receiveEncrypted(String mode) {
+        return receiveEncrypted(sessionKey, mode);
     }
 
-    public byte[] receiveWithoutTimestamp(SecretKey key) {
-        byte[] encrypted = commChannel.receiveByteArray();
-        byte[] received = Cryptography.decrypt(encrypted, key);
-        return received;
+    public byte[] receiveEncrypted(SecretKey key, String mode) {
+        try {
+            byte[] encrypted = commChannel.receiveByteArray();
+            byte[] received = Cryptography.decrypt(encrypted, key, mode);
+            long timestamp = retrieveTimestamp(received);
+            if(checkTimestamp(timestamp)) {
+                return retrieveData(received);
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public byte[] receiveUnsecured() {
-        byte[] data = commChannel.receiveByteArray();
-        return data;
+        try {
+            return commChannel.receiveByteArray();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -106,7 +104,7 @@ public abstract class SecurityManager {
      */
     public byte[] addTimestamp(byte[] data) {
         Instant inst = Instant.now();
-        long timestamp = inst.toEpochMilli() - timestampReference.toEpochMilli();
+        long timestamp = inst.toEpochMilli();
         byte[] stampBytes = Helper.longToBytes(timestamp);
         int size = data.length + stampBytes.length;
         byte[] toSend = new byte[size];
@@ -136,9 +134,11 @@ public abstract class SecurityManager {
     }
 
     private boolean checkTimestamp(long timestamp) {
-        long reference = timestampReference.toEpochMilli() + timestamp;
         long current = Instant.now().toEpochMilli();
-        if(current - reference > TIMESTAMP_THRESHOLD || reference > current)
+        System.out.println("Timestamp check: ");
+        System.out.println("Received: " + timestamp);
+        System.out.println("Current: " + current);
+        if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
             return false;
         return true;
     }
