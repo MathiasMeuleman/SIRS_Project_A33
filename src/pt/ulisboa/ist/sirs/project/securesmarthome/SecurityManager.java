@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.time.Instant;
 import java.util.Arrays;
 
 /**
@@ -17,7 +16,7 @@ import java.util.Arrays;
  */
 public abstract class SecurityManager {
 
-    private static final long TIMESTAMP_THRESHOLD = Long.MAX_VALUE;
+    private static final long TIMESTAMP_THRESHOLD = 1000;
 
     protected final String TIME_SERVER = "128.138.141.172";
     protected long timeRef;
@@ -159,8 +158,7 @@ public abstract class SecurityManager {
     }
 
     private boolean checkTimestamp(long timestamp) {
-        timestamp -= timeRef;
-        long current = System.currentTimeMillis();
+        long current = System.currentTimeMillis() + timeRef;
         System.out.println("Timestamp check: ");
         System.out.println("Received: " + timestamp);
         System.out.println("Current: " + current);
