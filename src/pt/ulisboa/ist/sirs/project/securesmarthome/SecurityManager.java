@@ -119,9 +119,8 @@ public abstract class SecurityManager {
             NTPUDPClient timeClient = new NTPUDPClient();
             InetAddress address = InetAddress.getByName(TIME_SERVER);
             TimeInfo info = timeClient.getTime(address);
-            long exactTime = info.getReturnTime();
-            long currentTime = System.currentTimeMillis();
-            timeRef = currentTime - exactTime;
+            info.computeDetails();
+            timeRef = info.getOffset();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -161,7 +160,7 @@ public abstract class SecurityManager {
     }
 
     private boolean checkTimestamp(long timestamp) {
-        long current = Instant.now().toEpochMilli();
+        long current = Instant.now().toEpochMilli() + timeRef;
         System.out.println("Timestamp check: ");
         System.out.println("Received: " + timestamp);
         System.out.println("Current: " + current);
