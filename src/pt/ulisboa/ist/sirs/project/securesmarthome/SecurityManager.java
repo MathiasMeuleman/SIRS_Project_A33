@@ -19,7 +19,7 @@ public abstract class SecurityManager {
 
     private static final long TIMESTAMP_THRESHOLD = Long.MAX_VALUE;
 
-    protected final String TIME_SERVER = "utcnist.colorado.edu";
+    protected final String TIME_SERVER = "128.138.141.172";
     protected long timeRef;
     protected SocketChannel commChannel;
     protected byte[] publicSHDKey;
