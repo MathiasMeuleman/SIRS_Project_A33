@@ -129,8 +129,7 @@ public abstract class SecurityManager {
     }
 
     public byte[] addTimestamp(byte[] data) {
-        Instant inst = Instant.now();
-        long timestamp = inst.toEpochMilli();
+        long timestamp = System.currentTimeMillis() + timeRef;
         byte[] stampBytes = Helper.longToBytes(timestamp);
         int size = data.length + stampBytes.length;
         byte[] toSend = new byte[size];
@@ -160,7 +159,8 @@ public abstract class SecurityManager {
     }
 
     private boolean checkTimestamp(long timestamp) {
-        long current = Instant.now().toEpochMilli() + timeRef;
+        timestamp -= timeRef;
+        long current = System.currentTimeMillis();
         System.out.println("Timestamp check: ");
         System.out.println("Received: " + timestamp);
         System.out.println("Current: " + current);
