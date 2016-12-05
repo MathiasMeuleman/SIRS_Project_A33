@@ -21,25 +21,4 @@ public class GatewaySocketChannel extends SocketChannel {
             e.printStackTrace();
         }
     }
-
-//    public void sendMessage(byte[] message) {
-//        try {
-//            outStream.writeInt(message.length);
-//            outStream.write(message);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public byte[] receiveByteArray() {
-//        try {
-//            int size = inStream.readInt();
-//            byte[] message = new byte[size];
-//            inStream.readFully(message);
-//            return message;
-//        } catch(IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 }
