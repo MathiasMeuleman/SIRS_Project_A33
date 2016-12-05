@@ -39,7 +39,11 @@ public class GatewaySecurity extends SecurityManager {
 
     @Override
     public void shareIV() {
-        byte[] iv = generateRandomIV();
+        byte[] iv = null;
+        while(iv == null) {
+            iv = generateRandomIV();
+        }
+        System.out.println("IV: " + Arrays.toString(iv));
         sendEncrypted(iv, "ECB");
         Cryptography.setIV(iv);
     }
