@@ -1,5 +1,11 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 /**
@@ -67,5 +73,24 @@ public class Helper {
         long res = buffer.getLong();
         buffer.clear();
         return res;
+    }
+
+//    public static final String TIME_SERVER = "128.138.141.172";
+    public static final String TIME_SERVER = "98.175.203.200";
+
+
+    public static long initTimestamp() {
+        try {
+            NTPUDPClient timeClient = new NTPUDPClient();
+            InetAddress address = InetAddress.getByName(TIME_SERVER);
+            TimeInfo info = timeClient.getTime(address);
+            info.computeDetails();
+            return info.getOffset();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

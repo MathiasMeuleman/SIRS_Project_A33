@@ -9,13 +9,16 @@ public class GatewayThread extends Thread {
 
     private GatewaySecurity security;
 
-    public GatewayThread(GatewaySecurity security, String key) {
+    public GatewayThread(int index, GatewaySecurity security) {
         this.security = security;
-        this.security.setKey(key);
+        this.security.setThreadIndex(index);
+        Gateway.threadIDs.add(this);
+        this.security.shareUUID();
     }
 
     @Override
     public void run() {
+        System.out.println("Thread started " + this.getId());
         security.connectToDevice();
         while(true) {
             try {
@@ -40,5 +43,9 @@ public class GatewayThread extends Thread {
 //        if(hasValidCommand) {
 //            send();
 //        }
+    }
+
+    public void setKey(String key) {
+        this.security.setKey(key);
     }
 }

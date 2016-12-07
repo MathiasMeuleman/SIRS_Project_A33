@@ -1,14 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
-
 import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 
 /**
@@ -18,33 +12,41 @@ public abstract class SecurityManager {
 
     private static final long TIMESTAMP_THRESHOLD = 1000;
 
-    protected final String TIME_SERVER = "128.138.141.172";
+    protected final int KEY_THRESHOLD = 25;
+
     protected long timeRef;
     protected SocketChannel commChannel;
     protected byte[] publicSHDKey;
     protected byte[] publicGatewayKey;
     protected SecretKey sessionKey;
     protected SecretKey aprioriSharedKey;
-
-    public SecurityManager() {
-
-    }
+    protected int keyUsageCounter = 0;
 
     public void connectToDevice() {
         shareSessionKey();
-        initTimestamp();
+        System.out.println("[INFO] Shared session key");
         shareIV();
+        System.out.println("[INFO] Shared IV");
         authenticate();
     }
 
+    public abstract void shareUUID();
     public abstract void shareSessionKey();
     public abstract void shareIV();
     public abstract void authenticate();
+    public abstract void checkKeyExpired() throws SocketException;
 
     public void send(byte[] data) throws SocketException {
         byte[] toSend = addTimestamp(data);
         byte[] encrypted = Cryptography.encrypt(toSend, sessionKey, "CBC");
+        System.out.println("Sending encrypted: " + Arrays.toString(encrypted));
         commChannel.sendMessage(encrypted);
+        checkKeyExpired();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendEncrypted(byte[] data, String mode) {
@@ -73,6 +75,7 @@ public abstract class SecurityManager {
         byte[] encrypted = commChannel.receiveByteArray();
         byte[] received = Cryptography.decrypt(encrypted, sessionKey, "CBC");
         long timestamp = retrieveTimestamp(received);
+        checkKeyExpired();
         if(checkTimestamp(timestamp)) {
             return retrieveData(received);
         } else {
@@ -111,20 +114,6 @@ public abstract class SecurityManager {
         return null;
     }
 
-    public void initTimestamp() {
-        try {
-            NTPUDPClient timeClient = new NTPUDPClient();
-            InetAddress address = InetAddress.getByName(TIME_SERVER);
-            TimeInfo info = timeClient.getTime(address);
-            info.computeDetails();
-            timeRef = info.getOffset();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public byte[] addTimestamp(byte[] data) {
         long timestamp = System.currentTimeMillis() + timeRef;
         byte[] stampBytes = Helper.longToBytes(timestamp);
@@ -157,8 +146,17 @@ public abstract class SecurityManager {
 
     private boolean checkTimestamp(long timestamp) {
         long current = System.currentTimeMillis() + timeRef;
-        if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
+        System.out.println("Timestamp check");
+        System.out.println("Current: "+ current);
+        System.out.println("Received: " + timestamp);
+        if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp - 10 > current)
             return false;
         return true;
+    }
+
+    protected boolean clientOnSameIP() {
+        InetSocketAddress local = (InetSocketAddress) this.commChannel.getLocalAddress();
+        InetSocketAddress remote = (InetSocketAddress) this.commChannel.getRemoteAddress();
+        return local.getAddress().equals(remote.getAddress());
     }
 }

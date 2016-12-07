@@ -6,8 +6,10 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.SecurityManager;
 import pt.ulisboa.ist.sirs.project.securesmarthome.AESSecretKeyFactory;
 import pt.ulisboa.ist.sirs.project.securesmarthome.DHKeyAgreement;
 
+import java.net.SocketException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Created by Mathias on 2016-12-03.
@@ -15,18 +17,38 @@ import java.util.Arrays;
 public class GatewaySecurity extends SecurityManager {
 
     private String key;
-    private int SHD_ID;
+    private UUID SHDuuid;
+    private int threadIndex;
 
-    public GatewaySecurity(GatewaySocketChannel channel) {
+    public GatewaySecurity(GatewaySocketChannel channel, long timeRef) {
         this.commChannel = channel;
+        if(clientOnSameIP())
+            this.timeRef = 0;
+        else
+            this.timeRef = timeRef;
+        System.out.println("timeRef: " + this.timeRef);
+    }
+
+    @Override
+    public void shareUUID() {
+        System.out.println("waiting for UUID");
+        byte[] unsec = receiveUnsecured();
+        long most = Helper.bytesToLong(unsec);
+        System.out.println("Got the first part: ");
+        System.out.println(Arrays.toString(unsec));
+        unsec = receiveUnsecured();
+        long least = Helper.bytesToLong(unsec);
+        System.out.println("Got the second part:");
+        System.out.println(Arrays.toString(unsec));
+        SHDuuid = new UUID(most, least);
+        Gateway.linkThreadToUUID(threadIndex, SHDuuid);
+        Gateway.newConnectionUUID = SHDuuid;
     }
 
     @Override
     public void shareSessionKey() {
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(key);
-        // add the new input key to the list for authentication
-        int SHD_ID = Gateway.aprioriSharedKeysList.size();
-        Gateway.aprioriSharedKeysList.add(AESSecretKeyFactory.createSecretKey(key));
+        Gateway.aprioriSharedKeysList.put(SHDuuid, key);
 
         // do DH to establish shared key
         receivePubKey();
@@ -34,7 +56,6 @@ public class GatewaySecurity extends SecurityManager {
         sendPubKey();
         DHKeyAgreement.createSharedSecretB(publicSHDKey);
         sessionKey = DHKeyAgreement.getSharedSecretKey();
-        System.out.println("Finished DH");
     }
 
     @Override
@@ -43,6 +64,7 @@ public class GatewaySecurity extends SecurityManager {
         while(iv == null) {
             iv = generateRandomIV();
         }
+        System.out.println("Generated IV: " + Arrays.toString(iv));
         sendEncrypted(iv, "ECB");
         Cryptography.setIV(iv);
     }
@@ -51,10 +73,11 @@ public class GatewaySecurity extends SecurityManager {
     public void authenticate() {
         // receive authentication message from SHD
         byte[] authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
+        System.out.println("Authstream: " + Arrays.toString(authenticationMessage));
         if (authenticationMessage == null) {
             // wrong key!!!
             Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
-            System.out.println("Gateway: SHD authentication failed!");
+            System.err.println("[ERROR] SHD authentication failed!");
             commChannel.dropConnection();
             System.out.println("Drop connection to that SHD!");
         } else {
@@ -74,7 +97,7 @@ public class GatewaySecurity extends SecurityManager {
                 // wrong public keys used for authentication
                 System.out.println("Wrong public keys used for authentication!");
                 Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
-                System.out.println("Gateway: SHD authentication failed!");
+                System.err.println("[ERROR] SHD authentication failed!");
                 commChannel.dropConnection();
                 System.out.println("Drop connection to that SHD!");
             }
@@ -88,6 +111,17 @@ public class GatewaySecurity extends SecurityManager {
         return iv;
     }
 
+    @Override
+    public void checkKeyExpired() throws SocketException {
+        keyUsageCounter++;
+        if(keyUsageCounter > KEY_THRESHOLD) {
+            System.out.println("Session key expired");
+            System.out.println("Dropping connection...");
+            commChannel.dropConnection();
+            throw new SocketException();
+        }
+    }
+
     protected void sendPubKey() {
         sendUnsecured(publicGatewayKey);
     }
@@ -98,5 +132,9 @@ public class GatewaySecurity extends SecurityManager {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public void setThreadIndex(int threadIndex) {
+        this.threadIndex = threadIndex;
     }
 }

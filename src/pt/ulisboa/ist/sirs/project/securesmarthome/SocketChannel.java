@@ -3,7 +3,9 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
 
 /**
@@ -43,8 +45,24 @@ public abstract class SocketChannel {
     public void dropConnection() {
         try {
             socket.close();
+            outStream = null;
+            inStream = null;
         } catch (IOException e) {
-            e.printStackTrace();
+            return;
+        } catch (NullPointerException e) {
+            return;
         }
+    }
+
+    public SocketAddress getLocalAddress() {
+        System.out.println(this.socket.getLocalSocketAddress().toString());
+        return this.socket.getLocalSocketAddress();
+    }
+
+    public SocketAddress getRemoteAddress() {
+        if(socket == null)
+            System.out.println("SOCKET == NULL");
+        System.out.println(this.socket.getRemoteSocketAddress().toString());
+        return this.socket.getRemoteSocketAddress();
     }
 }

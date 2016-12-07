@@ -15,7 +15,12 @@ public class TemperatureSensor {
 
     public void run() {
         security.connectToDevice();
-        temperatureSim();
+        System.out.println("Ready");
+        while(true) {
+            temperatureSim();
+            System.out.println("Reconnecting");
+            security.resetConnection();
+        }
     }
 
     private void temperatureSim() {
@@ -28,7 +33,8 @@ public class TemperatureSensor {
                 try {
                     security.send(dataBytes);
                 } catch (SocketException e) {
-                    e.printStackTrace();
+                    System.out.println("Connection was lost");
+                    return;
                 }
                 temp++;
             }

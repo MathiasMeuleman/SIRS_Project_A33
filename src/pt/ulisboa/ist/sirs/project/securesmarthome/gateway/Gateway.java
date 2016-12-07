@@ -1,11 +1,15 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
-import javax.crypto.SecretKey;
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
+
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.UnknownHostException;
+import java.util.*;
 
 
 /**
@@ -13,15 +17,23 @@ import java.util.List;
  */
 public class Gateway {
 
-    public static List<SecretKey> aprioriSharedKeysList;
+    public static List<GatewayThread> threadIDs;
+    public static Map<UUID, String> aprioriSharedKeysList;
+    public static Map<UUID, GatewayThread> threadList;
     public static List<AuthenticatedSHD> smartHomeDevices;
+    public static UUID newConnectionUUID;
+
+    private long timeRef;
     private String key;
     private ServerSocket serverSocket;
 
     public Gateway(String key) {
+        threadIDs = new ArrayList<>();
         smartHomeDevices = new ArrayList<>();
-        aprioriSharedKeysList = new ArrayList<>();
+        aprioriSharedKeysList = new HashMap<>();
+        threadList = new HashMap<>();
         this.key = key;
+        timeRef = Helper.initTimestamp();
         try {
             serverSocket = new ServerSocket(11000);
         } catch (IOException e) {
@@ -39,11 +51,26 @@ public class Gateway {
                 GatewaySocketChannel channel = new GatewaySocketChannel(socket);
                 // Should get a timeout
                 System.out.println("Accepted client, creating thread");
-                GatewayThread thread = new GatewayThread(new GatewaySecurity(channel), key);
+                int index = threadIDs.size();
+                GatewayThread thread = new GatewayThread(index, new GatewaySecurity(channel, 0));
+                String apriori = aprioriSharedKeysList.get(newConnectionUUID);
+                if(apriori == null) {
+                    if(key == null) {
+                        System.out.println("No key supplied, bitch!");
+                    } else {
+                        thread.setKey(key);
+                    }
+                } else {
+                    thread.setKey(apriori);
+                }
                 thread.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void linkThreadToUUID(int threadIndex, UUID uuid) {
+        threadList.put(uuid, threadIDs.get(threadIndex));
     }
 }
