@@ -33,7 +33,6 @@ public abstract class SecurityManager {
     public void connectToDevice() {
         shareSessionKey();
         initTimestamp();
-        System.out.println("TimeRef: " + timeRef);
         shareIV();
         authenticate();
     }
@@ -56,7 +55,6 @@ public abstract class SecurityManager {
         byte[] toSend = addTimestamp(data);
         byte[] encrypted = Cryptography.encrypt(toSend, key, mode);
         try {
-            System.out.println("ToSend: " + Arrays.toString(encrypted));
             commChannel.sendMessage(encrypted);
         } catch (SocketException e) {
             e.printStackTrace();
@@ -159,9 +157,6 @@ public abstract class SecurityManager {
 
     private boolean checkTimestamp(long timestamp) {
         long current = System.currentTimeMillis() + timeRef;
-        System.out.println("Timestamp check: ");
-        System.out.println("Received: " + timestamp);
-        System.out.println("Current: " + current);
         if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp > current)
             return false;
         return true;

@@ -43,7 +43,6 @@ public class GatewaySecurity extends SecurityManager {
         while(iv == null) {
             iv = generateRandomIV();
         }
-        System.out.println("IV: " + Arrays.toString(iv));
         sendEncrypted(iv, "ECB");
         Cryptography.setIV(iv);
     }

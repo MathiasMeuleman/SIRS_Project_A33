@@ -13,7 +13,7 @@ public class SHDMain {
             TemperatureSensor sens = new TemperatureSensor(new SHDSecurity());
             sens.run();
         } else if(args[0].equals("lightBulb")) {
-            LightBulb bulb = new LightBulb();
+            LightBulb bulb = new LightBulb(new SHDSecurity());
             bulb.run();
         }
     }
