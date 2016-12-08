@@ -18,7 +18,6 @@ public class GatewayThread extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Thread started " + this.getId());
         security.connectToDevice();
         while(true) {
             try {

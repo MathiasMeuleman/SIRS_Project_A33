@@ -40,7 +40,6 @@ public abstract class SecurityManager {
     public void send(byte[] data) throws SocketException {
         byte[] toSend = addTimestamp(data);
         byte[] encrypted = Cryptography.encrypt(toSend, sessionKey, "CBC");
-        System.out.println("Sending encrypted: " + Arrays.toString(encrypted));
         commChannel.sendMessage(encrypted);
         checkKeyExpired();
         try {
@@ -113,14 +112,15 @@ public abstract class SecurityManager {
         public byte[] receiveUnsecured() throws TimeoutException{
         try {
             long timeoutMilliseconds = 10000;
-            return Executor.exeSocketChannelReceive(commChannel,timeoutMilliseconds);
+            byte[] res = Executor.exeSocketChannelReceive(commChannel,timeoutMilliseconds);
+            return res;
             /* code without timeout
             return commChannel.receiveByteArray();
             */
         } catch (SocketException e) {
             e.printStackTrace();
         }
-            return null;
+        return null;
     }
 
     public byte[] addTimestamp(byte[] data) {
@@ -155,9 +155,6 @@ public abstract class SecurityManager {
 
     private boolean checkTimestamp(long timestamp) {
         long current = System.currentTimeMillis() + timeRef;
-        System.out.println("Timestamp check");
-        System.out.println("Current: "+ current);
-        System.out.println("Received: " + timestamp);
         if(current - timestamp > TIMESTAMP_THRESHOLD || timestamp - 10 > current)
             return false;
         return true;

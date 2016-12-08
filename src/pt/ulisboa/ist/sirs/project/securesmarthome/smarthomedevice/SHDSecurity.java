@@ -25,14 +25,11 @@ public class SHDSecurity extends SecurityManager {
 
     public SHDSecurity() {
         this.commChannel = new SHDSocketChannel();
-        if(commChannel == null)
-            System.out.println("COMMS == NULL");
         if(clientOnSameIP())
             timeRef = 0;
         else
             timeRef = Helper.initTimestamp();
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(printedKey);
-        System.out.println("timeRef: " + timeRef);
         shareUUID();
     }
 
@@ -45,9 +42,7 @@ public class SHDSecurity extends SecurityManager {
             ByteBuffer bb = ByteBuffer.wrap(bytes);
             uuid = new UUID(bb.getLong(), bb.getLong());
         }
-        System.out.println("Sending first part: " + Arrays.toString(Helper.longToBytes(uuid.getMostSignificantBits())));
         sendUnsecured(Helper.longToBytes(uuid.getMostSignificantBits()));
-        System.out.println("Sending second part: " + Arrays.toString(Helper.longToBytes(uuid.getLeastSignificantBits())));
         sendUnsecured(Helper.longToBytes(uuid.getLeastSignificantBits()));
     }
 
@@ -71,10 +66,9 @@ public class SHDSecurity extends SecurityManager {
         {
             System.out.println("SHD: Timeout during receiving of IV");
             System.out.println("method called resetConnection()");
-            // TODO resetConnection()
+            resetConnection();
         }
         if (iv != null)
-            System.out.println("IV from Gateway: " + Arrays.toString(iv));
             Cryptography.setIV(iv);
     }
 
@@ -83,7 +77,6 @@ public class SHDSecurity extends SecurityManager {
     {
         // generate authentication message
         byte[] authenticationMessage = Helper.getConcatPubKeys(publicSHDKey, publicGatewayKey);
-        System.out.println("Authstream: " + Arrays.toString(authenticationMessage));
         // authenticate by sending it to the other party
         sendEncrypted(authenticationMessage, aprioriSharedKey, "CBC");
         // receive authentication message from Gateway
