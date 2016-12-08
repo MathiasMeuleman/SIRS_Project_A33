@@ -14,12 +14,12 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <style>
     .bg-1 {
-      background-color: #1abc9c;
-      color: #1b1b1b;
+      background-color: #1b1b1b;
+      color: #34bc45;
     }
     .bg-2 {
-      background-color: #bc5257;
-      color: #1b1b1b;
+      background-color: #1b1b1b;
+      color: #34bc45;
     }
   </style>
   <script>
@@ -38,31 +38,29 @@
 <body>
 <div class="container-fluid bg-1 text-center">
   <h2 class="message"><%=Hello.getMessage()%></h2>
+</div>
+
+<div class="container-fluid bg-2">
   <form>
     <h3>Add new Smart Home Device</h3>
-    <div class="form-group">
-      <label for="dev_name">Device Name:</label>
-      <input type="text" class="form-control" id="dev_name">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="dev_name">Device Name:</label>
+        <input type="text" class="form-control" id="dev_name">
+      </div>
     </div>
+
+    <div class="col-sm-6">
     <div class="form-group">
       <label for="dev_key">Device Key:</label>
       <input type="text" class="form-control" id="dev_key">
     </div>
-    <button onclick="addDevice();" type="button" class="btn btn-default">Add</button>
+    </div>
+    <button onclick="addDevice();" type="button" class="btn btn-success btn-lg">Add</button>
   </form>
-</div>
-
-<div class="container-fluid bg-2">
-  <h3>-> Device key is stored in a variable (javascript)</h3>
-  <h3>-> We can call a java (e.g.Gateway) method with the device key</h3>
-  <h3>-> Device name is stored and the SHD is called</h3>
-  <h3>-> Display connected device</h3>
-</div>
-
-<div class="container-fluid bg-1">
-    <h3 id="device"></h3>
-    <h3 id="key"></h3>
-    <h3 id="error"></h3>
+  <h3 id="device"></h3>
+  <h3 id="key"></h3>
+  <h3 id="error"></h3>
 </div>
 
 </body>
