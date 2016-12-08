@@ -28,12 +28,10 @@
   <script>
       function addDevice() {
           if(typeof(Storage) !== "undefined") {
-              var dn = document.getElementById("dev_name").value;
-              var dk = document.getElementById("dev_key").value;
-              sessionStorage.dname = dn;
-              sessionStorage.dkey = dk;
-              document.getElementById("device").innerHTML = sessionStorage.dname;
-              document.getElementById("key").innerHTML = sessionStorage.dkey;
+              sessionStorage.dname = document.getElementById("dev_name").value;
+              sessionStorage.dkey = document.getElementById("dev_key").value;
+              document.getElementById("device").innerHTML = "Device:" + sessionStorage.dname;
+              document.getElementById("key").innerHTML = "Key:" + sessionStorage.dkey;
           } else {
               document.getElementById("error").innerHTML = "Browser does not support web storage...";
           }
@@ -53,7 +51,7 @@
       <label for="dev_key">Device Key:</label>
       <input type="text" class="form-control" id="dev_key">
     </div>
-    <button type="submit" class="btn btn-default" onclick="addDevice();">Add</button>
+    <button onclick="addDevice();" type="button" class="btn btn-default">Add</button>
   </form>
 </div>
 
@@ -63,9 +61,13 @@
   <h3>-> Device name is stored and the SHD is called</h3>
   <h3>-> Display connected device</h3>
 </div>
-<p id="device"></p>
-<p id="key"></p>
-<p id="error"></p>
+
+<div class="container-fluid bg-1">
+    <h3 id="device"></h3>
+    <h3 id="key"></h3>
+    <h3 id="error"></h3>
+</div>
+
 
 </body>
 </html>
