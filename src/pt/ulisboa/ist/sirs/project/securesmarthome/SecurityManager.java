@@ -4,6 +4,7 @@ import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.concurrent.*;
 
 /**
  * Created by Mathias on 2016-11-21.
@@ -84,13 +85,17 @@ public abstract class SecurityManager {
         return null;
     }
 
-    public byte[] receiveEncrypted(String mode) {
+    public byte[] receiveEncrypted(String mode) throws TimeoutException {
         return receiveEncrypted(sessionKey, mode);
     }
 
-    public byte[] receiveEncrypted(SecretKey key, String mode) {
+    public byte[] receiveEncrypted(SecretKey key, String mode) throws TimeoutException{
         try {
+            long timeoutMilliseconds = 10000;
+            byte[] encrypted = Executor.exeSocketChannelReceive(commChannel,timeoutMilliseconds);
+            /* code without timeout
             byte[] encrypted = commChannel.receiveByteArray();
+            **/
             byte[] received = Cryptography.decrypt(encrypted, key, mode);
             long timestamp = retrieveTimestamp(received);
             if(checkTimestamp(timestamp)) {
@@ -105,13 +110,17 @@ public abstract class SecurityManager {
         return null;
     }
 
-    public byte[] receiveUnsecured() {
+        public byte[] receiveUnsecured() throws TimeoutException{
         try {
+            long timeoutMilliseconds = 10000;
+            return Executor.exeSocketChannelReceive(commChannel,timeoutMilliseconds);
+            /* code without timeout
             return commChannel.receiveByteArray();
+            */
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        return null;
+            return null;
     }
 
     public byte[] addTimestamp(byte[] data) {
