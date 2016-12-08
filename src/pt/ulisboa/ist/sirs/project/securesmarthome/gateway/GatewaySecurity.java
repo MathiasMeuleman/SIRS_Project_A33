@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Mathias on 2016-12-03.
@@ -32,11 +33,30 @@ public class GatewaySecurity extends SecurityManager {
     @Override
     public void shareUUID() {
         System.out.println("waiting for UUID");
-        byte[] unsec = receiveUnsecured();
+        byte[] unsec = null;
+        try {
+            unsec = receiveUnsecured();
+        }
+        catch (TimeoutException timeout)
+        {
+            System.out.println("Gateway: Timeout during first part UUID receiving!");
+            commChannel.dropConnection();
+            System.out.println("Gateway: Drop connection to that SHD!");
+            return;
+        }
         long most = Helper.bytesToLong(unsec);
         System.out.println("Got the first part: ");
         System.out.println(Arrays.toString(unsec));
-        unsec = receiveUnsecured();
+        try {
+            unsec = receiveUnsecured();
+        }
+        catch (TimeoutException timeout)
+        {
+            System.out.println("Gateway: Timeout during second part UUID receiving!");
+            commChannel.dropConnection();
+            System.out.println("Gateway: Drop connection to that SHD!");
+            return;
+        }
         long least = Helper.bytesToLong(unsec);
         System.out.println("Got the second part:");
         System.out.println(Arrays.toString(unsec));
@@ -72,29 +92,44 @@ public class GatewaySecurity extends SecurityManager {
     @Override
     public void authenticate() {
         // receive authentication message from SHD
-        byte[] authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
-        System.out.println("Authstream: " + Arrays.toString(authenticationMessage));
+        byte[] authenticationMessage = null;
+        try {
+            authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
+            System.out.println("Authstream: " + Arrays.toString(authenticationMessage));
+        }
+        catch (TimeoutException timeout)
+        {
+            Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
+            System.out.println("Gateway: SHD authentication failed!");
+            System.out.println("Gateway: Timeout during authentication!");
+            commChannel.dropConnection();
+            System.out.println("Gateway: Drop connection to that SHD!");
+            return;
+        }
         if (authenticationMessage == null) {
             // wrong key!!!
             Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
             System.err.println("[ERROR] SHD authentication failed!");
+            System.out.println("[ERROR] Wrong key used for encryption!");
             commChannel.dropConnection();
-            System.out.println("Drop connection to that SHD!");
+            System.out.println("Gateway: Drop connection to that SHD!");
         } else {
+            // authenticate SHD
             // compare with concatenated keys
             byte[] concatKeys = Helper.getConcatPubKeys(publicSHDKey, publicGatewayKey);
             if (Arrays.equals(authenticationMessage, concatKeys)) {
-                Gateway.smartHomeDevices.add(new AuthenticatedSHD(true));
-                // authenticate gateway
-                // generate authentication message
-                authenticationMessage = Helper.getConcatPubKeys(publicGatewayKey, publicSHDKey);
-                // authenticate by sending it to the other party
-                sendEncrypted(authenticationMessage, aprioriSharedKey, "CBC");
-
+                // SHD is authenticated
                 System.out.println("Gateway: SHD authentication succeed!");
+                Gateway.smartHomeDevices.add(new AuthenticatedSHD(true));
+
+                // generate authentication message for gateway authentication
+                authenticationMessage = Helper.getConcatPubKeys(publicGatewayKey, publicSHDKey);
+                // authenticate by sending it to the SHD
+                sendEncrypted(authenticationMessage, aprioriSharedKey, "CBC");
             }
             else {
                 // wrong public keys used for authentication
+                System.out.println("Gateway: SHD authentication failed!");
                 System.out.println("Wrong public keys used for authentication!");
                 Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
                 System.err.println("[ERROR] SHD authentication failed!");
@@ -127,7 +162,16 @@ public class GatewaySecurity extends SecurityManager {
     }
 
     protected void receivePubKey() {
-        publicSHDKey = receiveUnsecured();
+        try {
+            publicSHDKey = receiveUnsecured();
+        }
+        catch (TimeoutException timeout)
+        {
+            System.out.println("Gateway: Timeout during receiving public keys!");
+            commChannel.dropConnection();
+            System.out.println("Gateway: Drop connection to that SHD!");
+            return;
+        }
     }
 
     public void setKey(String key) {
