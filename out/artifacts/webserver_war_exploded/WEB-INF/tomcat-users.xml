@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='cp1252'?>
+
+<!--This is needed by the tomcat server to have the list of users (+pw)
+  in order to authenticate to the web server. In case it doesn't working here
+  add to your tomcat server path:
+  e.g.: C:\Program Files\Apache Software Foundation\Tomcat 9.0\conf
+  -->
+<tomcat-users xmlns="http://tomcat.apache.org/xml"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+              version="1.0">
+
+  <role rolename="tomcat"/>
+  <user username="robert" password="group33" roles="tomcat"/>
+  <user username="mathias" password="group33" roles="tomcat"/>
+  <user username="torben" password="group33" roles="tomcat"/>
+
+</tomcat-users>
