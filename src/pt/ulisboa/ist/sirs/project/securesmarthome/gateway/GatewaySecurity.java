@@ -27,7 +27,6 @@ public class GatewaySecurity extends SecurityManager {
             this.timeRef = 0;
         else
             this.timeRef = timeRef;
-        System.out.println("timeRef: " + this.timeRef);
     }
 
     @Override
@@ -45,8 +44,6 @@ public class GatewaySecurity extends SecurityManager {
             return;
         }
         long most = Helper.bytesToLong(unsec);
-        System.out.println("Got the first part: ");
-        System.out.println(Arrays.toString(unsec));
         try {
             unsec = receiveUnsecured();
         }
@@ -58,8 +55,7 @@ public class GatewaySecurity extends SecurityManager {
             return;
         }
         long least = Helper.bytesToLong(unsec);
-        System.out.println("Got the second part:");
-        System.out.println(Arrays.toString(unsec));
+        System.out.println("Received UUID");
         SHDuuid = new UUID(most, least);
         Gateway.linkThreadToUUID(threadIndex, SHDuuid);
         Gateway.newConnectionUUID = SHDuuid;
@@ -84,7 +80,7 @@ public class GatewaySecurity extends SecurityManager {
         while(iv == null) {
             iv = generateRandomIV();
         }
-        System.out.println("Generated IV: " + Arrays.toString(iv));
+        System.out.println("Generated IV");
         sendEncrypted(iv, "ECB");
         Cryptography.setIV(iv);
     }
@@ -95,7 +91,6 @@ public class GatewaySecurity extends SecurityManager {
         byte[] authenticationMessage = null;
         try {
             authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
-            System.out.println("Authstream: " + Arrays.toString(authenticationMessage));
         }
         catch (TimeoutException timeout)
         {

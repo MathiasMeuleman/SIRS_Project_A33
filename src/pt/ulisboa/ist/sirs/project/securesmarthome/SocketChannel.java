@@ -60,8 +60,6 @@ public abstract class SocketChannel {
     }
 
     public SocketAddress getRemoteAddress() {
-        if(socket == null)
-            System.out.println("SOCKET == NULL");
         System.out.println(this.socket.getRemoteSocketAddress().toString());
         return this.socket.getRemoteSocketAddress();
     }
