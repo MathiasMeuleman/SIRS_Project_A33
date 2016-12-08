@@ -1,10 +1,7 @@
 <%@ page import="Sample.Hello" %>
 <%--
   Created by IntelliJ IDEA.
-  User: maxwell
-  Date: 12/07/16
-  Time: 23:37
-  To change this template use File | Settings | File Templates.
+  User: Robert
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -67,7 +64,6 @@
     <h3 id="key"></h3>
     <h3 id="error"></h3>
 </div>
-
 
 </body>
 </html>
