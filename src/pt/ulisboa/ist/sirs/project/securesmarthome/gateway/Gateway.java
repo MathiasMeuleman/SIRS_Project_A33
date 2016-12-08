@@ -1,14 +1,10 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome.gateway;
 
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
 import pt.ulisboa.ist.sirs.project.securesmarthome.Helper;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
 
 

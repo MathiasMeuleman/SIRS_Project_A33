@@ -55,12 +55,10 @@ public abstract class SocketChannel {
     }
 
     public SocketAddress getLocalAddress() {
-        System.out.println(this.socket.getLocalSocketAddress().toString());
         return this.socket.getLocalSocketAddress();
     }
 
     public SocketAddress getRemoteAddress() {
-        System.out.println(this.socket.getRemoteSocketAddress().toString());
         return this.socket.getRemoteSocketAddress();
     }
 }
