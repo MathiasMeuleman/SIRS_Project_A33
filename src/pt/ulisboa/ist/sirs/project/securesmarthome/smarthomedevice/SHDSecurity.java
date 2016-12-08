@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Mathias on 2016-12-03.
@@ -62,9 +63,19 @@ public class SHDSecurity extends SecurityManager {
 
     @Override
     public void shareIV() {
-        byte[] iv = receiveEncrypted("ECB");
-        System.out.println("IV from Gateway: " + Arrays.toString(iv));
-        Cryptography.setIV(iv);
+        byte[] iv = null;
+        try {
+            iv = receiveEncrypted("ECB");
+        }
+        catch (TimeoutException timeout)
+        {
+            System.out.println("SHD: Timeout during receiving of IV");
+            System.out.println("method called resetConnection()");
+            // TODO resetConnection()
+        }
+        if (iv != null)
+            System.out.println("IV from Gateway: " + Arrays.toString(iv));
+            Cryptography.setIV(iv);
     }
 
     @Override
@@ -76,11 +87,23 @@ public class SHDSecurity extends SecurityManager {
         // authenticate by sending it to the other party
         sendEncrypted(authenticationMessage, aprioriSharedKey, "CBC");
         // receive authentication message from Gateway
-        authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
+        try {
+            authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
+        }
+        catch (TimeoutException timeout)
+        {
+            // TODO resetConnection()
+            System.out.println("SHD: Gateway authentication failed!");
+            System.out.println("SHD: Timeout during authentication!");
+            System.out.println("method called resetConnection()");
+        }
         if (authenticationMessage == null)
         {
             // wrong key!!!
+            // TODO resetConnection()
             System.out.println("SHD: Gateway authentication failed!");
+            System.out.println("SHD: Wrong key used for encryption!");
+            System.out.println("method called resetConnection()");
         }
         else {
             // compare with concatenated keys
@@ -90,8 +113,10 @@ public class SHDSecurity extends SecurityManager {
             }
             else {
                 // wrong public keys used for authentication
-                System.out.println("Wrong public keys used for authentication!");
+                // TODO resetConnection()
                 System.out.println("SHD: Gateway authentication failed!");
+                System.out.println("SHD: Wrong public keys used for authentication!");
+                System.out.println("method called resetConnection()");
             }
         }
     }
@@ -118,6 +143,15 @@ public class SHDSecurity extends SecurityManager {
     }
 
     protected void receivePubKey() {
-        publicGatewayKey = receiveUnsecured();
+        try {
+            publicGatewayKey = receiveUnsecured();
+        }
+        catch (TimeoutException timeout)
+        {
+            System.out.println("SHD: Timeout during receiving public keys!");
+            System.out.println("method called resetConnection()");
+            // TODO resetConnection()
+            return;
+        }
     }
 }
