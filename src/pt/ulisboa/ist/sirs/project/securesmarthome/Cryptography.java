@@ -1,9 +1,5 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-/**
- * Created by maxwell on 11/28/16.
- */
-
 import java.security.*;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
