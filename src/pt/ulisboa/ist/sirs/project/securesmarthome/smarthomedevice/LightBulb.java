@@ -17,7 +17,10 @@ public class LightBulb {
 
     public void run() {
         security.connectToDevice();
-        lightSim();
+        while(true) {
+            lightSim();
+            security.resetConnection();
+        }
     }
 
     private void lightSim()
@@ -32,7 +35,8 @@ public class LightBulb {
                 toggleLight();
                 // acknowledge the process
             } catch (SocketException e) {
-                e.printStackTrace();
+                System.out.println("Connection was lost");
+                return;
             }
         }
     }

@@ -2,7 +2,10 @@ package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 import java.security.*;
 import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import java.security.Key;
 
 public class Cryptography {
 

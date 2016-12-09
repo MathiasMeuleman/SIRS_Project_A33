@@ -52,7 +52,7 @@ public class Gateway {
                 String apriori = aprioriSharedKeysList.get(newConnectionUUID);
                 if(apriori == null) {
                     if(key == null) {
-                        System.out.println("No key supplied, bitch!");
+                        System.out.println("No key supplied!");
                     } else {
                         thread.setKey(key);
                     }
