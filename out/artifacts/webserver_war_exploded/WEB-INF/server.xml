@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--This configuration is needed by the tomcat server in order to have SSL/TLS
+  (HTTPS) web server. In case it doesn't working here add to your tomcat server path:
+  e.g.: C:\Program Files\Apache Software Foundation\Tomcat 9.0\conf
+  (Replace the server.xml from there)
+  -->
 
 <Server port="8005" shutdown="SHUTDOWN">
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
