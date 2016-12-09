@@ -5,6 +5,10 @@
 - SHD - Smart Home Device
 - GW - Gateway (contains a web server)
 
+###Platform and tools used:
+- Intellij IDEA Ultimate Edition
+
+
 ###Security components (src/pt.ulisboa.ist.sirs.project.securesmarthome/):
 - <b>AESSecretKeyFactory</b> - provides AES-128b key
 - <b>Cryptography</b> - encrypt/decrypt with AES-128b in CBC/ECB mode
@@ -13,26 +17,24 @@
 - <b>GatewaySecurity</b> - authenticate SHD and send IV (encrypted with AES-128b in ECB mode) for CBC encrypt/decrypt
 - <b>SHDSecurity</b> - authenticate GW 
 
-
 ###GW (src/pt.ulisboa.ist.sirs.project.securesmarthome.gateway/):
-- GW will act as server, which will open a socket and wait for a connection
+- <b>GW</b> will act as <b>server</b>, which will open a socket and wait for a connection
 - Setup: Run > Edit configurations > (+)Add new configuration > Application > Main class: <br />
-pt.ulisboa.ist.sirs.project.securesmarthome.gateway.GatewayMain
+pt.ulisboa.ist.sirs.project.securesmarthome.gateway.GatewayMain <br />
 Set -> Program arguments: ABCDEFGHIJKLMNOP <br />
 Rename it -> Name: GW
 
 ###SHD (src/pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice/):
-- SHD will act as client, which will connect to the GW socket start communication
+- <b>SHD</b> will act as <b>client</b>, which will connect to the GW socket start communication
 - Setup: Run > Edit configurations > (+)Add new configuration > Application > Main class: <br />
 pt.ulisboa.ist.sirs.project.securesmarthome.gateway.SHDMain <br />
 Set -> Program arguments: temperatureSensor <br />
 Rename it -> Name: SHD
 
-###TEST GW <-> SHD (having done the above setup for both the GW and SHD):
+###TEST GW <-> SHD in Intellij IDEA (having done the above setup for both the GW and SHD):
 - Run GW application (this will wait for a client - SHD to connect to it)
 - Run SHD application (will connect to the socket open by the gateway)
 - The key agreement and authentication should be done before data is transmitted over the channel
-
 
 ###Web Application Module (webserver/):
 - [Install apache server](https://tomcat.apache.org/download-90.cgi) 
@@ -41,6 +43,14 @@ Rename it -> Name: SHD
 - Run > Edit configurations > (+)Add new configuration > Tomcat Server > Local
 - Fix artifacts: In the same window go to Deployment > (+)Press Add > Artifact... 
 - In Server window in On "Update" action > Update classes and resources
+
+###TEST User <-> GW <-> SHD:
+- At the moment this feature is not implemented (time consuming to implement the connection)
+- Main idea of the implementation would be that: <br />
+-> User inputs on web interface SHD's name (temperatureSensor) and apriori key ('ABCDEFGHIJKLMNOP') <br />
+-> JavaScript will invoke a method from the Gateway jar with SHD's apriori key <br />
+-> JavaSript will invoke a method from the SHD jar with SHD's name <br />
+-> The incoming data from SHD to the GW will be displayed on the web interface
 
 ###Authentication on Web Application:
 - Check authentication servlet class: <b>AuthServlet</b>
@@ -61,6 +71,7 @@ Run > Edit configurations > Tomcat Server > Tomcat Server > Server: <br />
 -> HTTPs port: 8443
 - Run the server: Because it is a self-signed certificate it will say that is not secure. 
 Problem will be solved if the certificate is signed by a certified authority.
+
 
 ###Firewall (firewall/):
 - <b>group33-firewall.fwb</b> has been created using <b>fwbuilder</b> in CentOS.
