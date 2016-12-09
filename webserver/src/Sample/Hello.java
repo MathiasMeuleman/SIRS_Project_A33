@@ -1,7 +1,7 @@
 package Sample;
 
 /**
- * Created by Robert on 12/07/16.
+ * Created by Robert
  */
 public class Hello {
     public static String getMessage() {

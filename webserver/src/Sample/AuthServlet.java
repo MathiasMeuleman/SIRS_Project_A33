@@ -1,7 +1,7 @@
 package Sample;
 
 /**
- * Created by Robert on 12/08/16.
+ * Created by Robert
  * Authentication servlet using the users (+pw) in tomcat-users.xml
  */
 

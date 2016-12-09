@@ -23,8 +23,8 @@ C:\Users\YourUserName
 - Configure\Copy <b>server.xml</b> in: <br />
 C:\Program Files\Apache Software Foundation\Tomcat 9.0\server.xml
 - Configure the server before running: <br />
-- Run > Edit configurations > Tomcat Server > Tomcat Server > Server: <br />
-Open browser: https://localhost:8443/ <br />
-HTTPs port: 8443
+Run > Edit configurations > Tomcat Server > Tomcat Server > Server: <br />
+-> Open browser: https://localhost:8443/ <br />
+-> HTTPs port: 8443
 - Run the server: Because it is a self-signed certificate it will say that is not secure. 
 Problem will be solved if the certificate is signed by a certified authority.
