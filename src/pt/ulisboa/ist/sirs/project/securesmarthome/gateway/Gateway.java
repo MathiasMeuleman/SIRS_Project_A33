@@ -16,7 +16,6 @@ public class Gateway {
     public static List<GatewayThread> threadIDs;
     public static Map<UUID, String> aprioriSharedKeysList;
     public static Map<UUID, GatewayThread> threadList;
-    public static List<AuthenticatedSHD> smartHomeDevices;
     public static UUID newConnectionUUID;
 
     private long timeRef;
@@ -25,7 +24,6 @@ public class Gateway {
 
     public Gateway(String key) {
         threadIDs = new ArrayList<>();
-        smartHomeDevices = new ArrayList<>();
         aprioriSharedKeysList = new HashMap<>();
         threadList = new HashMap<>();
         this.key = key;
@@ -40,7 +38,7 @@ public class Gateway {
     public void run() {
         while (true) {
             // Wait for notification from webserver that the user wants to add a new SHD and then open serversocket, connect and execute
-//            waitForUserRequestAddShd()
+            // waitForUserRequestAddShd()
             try {
                 System.out.println("Waiting for client");
                 Socket socket = serverSocket.accept();
@@ -48,7 +46,7 @@ public class Gateway {
                 // Should get a timeout
                 System.out.println("Accepted client, creating thread");
                 int index = threadIDs.size();
-                GatewayThread thread = new GatewayThread(index, new GatewaySecurity(channel, 0));
+                GatewayThread thread = new GatewayThread(index, new GatewaySecurity(channel, timeRef));
                 String apriori = aprioriSharedKeysList.get(newConnectionUUID);
                 if(apriori == null) {
                     if(key == null) {

@@ -32,7 +32,7 @@ public class GatewaySecurity extends SecurityManager {
     @Override
     public void shareUUID() {
         System.out.println("waiting for UUID");
-        byte[] unsec = null;
+        byte[] unsec;
         try {
             unsec = receiveUnsecured();
         }
@@ -65,8 +65,6 @@ public class GatewaySecurity extends SecurityManager {
     public void shareSessionKey() {
         aprioriSharedKey = AESSecretKeyFactory.createSecretKey(key);
         Gateway.aprioriSharedKeysList.put(SHDuuid, key);
-
-        // do DH to establish shared key
         receivePubKey();
         publicGatewayKey = DHKeyAgreement.getPublicGatewayKey(publicSHDKey);
         sendPubKey();
@@ -88,13 +86,12 @@ public class GatewaySecurity extends SecurityManager {
     @Override
     public void authenticate() {
         // receive authentication message from SHD
-        byte[] authenticationMessage = null;
+        byte[] authenticationMessage;
         try {
             authenticationMessage = receiveEncrypted(aprioriSharedKey, "CBC");
         }
         catch (TimeoutException timeout)
         {
-            Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
             System.out.println("Gateway: SHD authentication failed!");
             System.out.println("Gateway: Timeout during authentication!");
             commChannel.dropConnection();
@@ -103,7 +100,6 @@ public class GatewaySecurity extends SecurityManager {
         }
         if (authenticationMessage == null) {
             // wrong key!!!
-            Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
             System.err.println("[ERROR] SHD authentication failed!");
             System.out.println("[ERROR] Wrong key used for encryption!");
             commChannel.dropConnection();
@@ -115,7 +111,6 @@ public class GatewaySecurity extends SecurityManager {
             if (Arrays.equals(authenticationMessage, concatKeys)) {
                 // SHD is authenticated
                 System.out.println("Gateway: SHD authentication succeed!");
-                Gateway.smartHomeDevices.add(new AuthenticatedSHD(true));
 
                 // generate authentication message for gateway authentication
                 authenticationMessage = Helper.getConcatPubKeys(publicGatewayKey, publicSHDKey);
@@ -126,7 +121,6 @@ public class GatewaySecurity extends SecurityManager {
                 // wrong public keys used for authentication
                 System.out.println("Gateway: SHD authentication failed!");
                 System.out.println("Wrong public keys used for authentication!");
-                Gateway.smartHomeDevices.add(new AuthenticatedSHD(false));
                 System.err.println("[ERROR] SHD authentication failed!");
                 commChannel.dropConnection();
                 System.out.println("Drop connection to that SHD!");

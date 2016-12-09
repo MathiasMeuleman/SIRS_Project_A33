@@ -21,23 +21,6 @@ public class Helper {
         buf.append(hexChars[low]);
     }
 
-    /*
-     * Converts a byte array to hex string
-     */
-    public static String toHexString(byte[] block) {
-        StringBuffer buf = new StringBuffer();
-
-        int len = block.length;
-
-        for (int i = 0; i < len; i++) {
-            byte2hex(block[i], buf);
-            if (i < len-1) {
-                buf.append(":");
-            }
-        }
-        return buf.toString();
-    }
-
     public static byte[] getConcatPubKeys(byte[] pubKeyEncA, byte[] pubKeyEncB) {
         // concatenating the public values
         byte[] concatPubKeyAB = new byte[pubKeyEncA.length + pubKeyEncB.length];
@@ -72,9 +55,7 @@ public class Helper {
         return res;
     }
 
-//    public static final String TIME_SERVER = "128.138.141.172";
     public static final String TIME_SERVER = "98.175.203.200";
-
 
     public static long initTimestamp() {
         try {

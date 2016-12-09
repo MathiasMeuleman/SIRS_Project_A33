@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
-import java.security.*;
-import javax.crypto.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -33,10 +31,6 @@ public class Cryptography {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static byte[] decrypt(byte[] ciphertext, Key key) {
-        return decrypt(ciphertext, key, MODE);
     }
 
     public static byte[] decrypt(byte[] ciphertext, Key key, String mode) {
