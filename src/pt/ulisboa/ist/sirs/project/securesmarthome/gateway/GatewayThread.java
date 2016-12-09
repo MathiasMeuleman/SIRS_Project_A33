@@ -31,17 +31,23 @@ public class GatewayThread extends Thread {
     }
 
     public void collectData() throws SocketException {
-        while(true) {
             byte[] data;
             data = security.receive();
             System.out.println("Received: " + new String(data));
-        }
     }
 
-    public void sendCommands() {
-//        if(hasValidCommand) {
-//            send();
-//        }
+    public void sendCommands() throws SocketException {
+        // toggle light bulb
+        String commandString = new String("Toggle Light");
+        byte[] command;
+        command = commandString.getBytes();
+        System.out.println("Sending command: " + commandString);
+        security.send(command);
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setKey(String key) {
