@@ -17,7 +17,10 @@ public class LightBulb {
 
     public void run() {
         security.connectToDevice();
-        lightSim();
+        while(true) {
+            lightSim();
+            security.resetConnection();
+        }
     }
 
     private void lightSim()
@@ -25,13 +28,17 @@ public class LightBulb {
         while (true)
         {
             try {
-                String command = security.receive().toString();
-                System.out.println("command received: " + command);
-                toggleLight();
-                // acknowledge the process
-                security.send(lightState.toString().getBytes());
+                security.send((new String("Light status: ") + lightState.toString()).getBytes());
+                byte[] command;
+                command = security.receive();
+                if(command != null) {
+                    System.out.println("Command received: " + new String(command));
+                    toggleLight();
+                    // acknowledge the process
+                }
             } catch (SocketException e) {
-                e.printStackTrace();
+                System.out.println("Connection was lost");
+                return;
             }
         }
     }
@@ -40,17 +47,19 @@ public class LightBulb {
     {
         if (lightState == LightState.ON)
             turnLightOff();
-        if (lightState == LightState.OFF)
+        else if (lightState == LightState.OFF)
             turnLightOn();
     }
 
     private void turnLightOff()
     {
+        System.out.println("Turn light off");
         lightState = LightState.OFF;
     }
 
     private void turnLightOn()
     {
+        System.out.println("Turn light on");
         lightState = LightState.ON;
     }
 

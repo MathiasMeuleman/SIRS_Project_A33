@@ -8,9 +8,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-/**
- * Created by Alex Anders on 21/11/2016.
- */
 public class Helper {
     /*
      * Converts a byte to hex digit and writes to the supplied buffer

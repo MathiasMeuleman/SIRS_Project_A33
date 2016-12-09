@@ -1,12 +1,8 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
+import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.LightBulb;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SHDSecurity;
-import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.TemperatureSensor;
 
-
-/**
- * Created by Alex Anders on 18/11/2016.
- */
 public class Main {
     public static void main(String[] args) throws Exception {
 
@@ -28,8 +24,8 @@ public class Main {
                 throw new Exception("Wrong number of command options");
             }
             System.out.println("Initializing SHD");
-            TemperatureSensor sens = new TemperatureSensor(new SHDSecurity());
-            sens.run();
+            LightBulb bulb = new LightBulb(new SHDSecurity());
+            bulb.run();
         }
     }
 }

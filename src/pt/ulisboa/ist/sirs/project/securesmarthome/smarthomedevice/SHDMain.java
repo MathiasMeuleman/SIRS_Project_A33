@@ -9,12 +9,15 @@ public class SHDMain {
             throw new Exception("Wrong number of command options");
         }
         System.out.println("Initializing SHD");
-        if(args[0].equals("temperatureSensor")) {
-            TemperatureSensor sens = new TemperatureSensor(new SHDSecurity());
-            sens.run();
-        } else if(args[0].equals("lightBulb")) {
+        if(args[0].equals("lightBulb")) {
             LightBulb bulb = new LightBulb(new SHDSecurity());
             bulb.run();
         }
+
+        //////////////////////////////////////////////////////////////////////////
+        //                                                                      //
+        // Option to add extra SHDs, according to the same pattern used above   //
+        //                                                                      //
+        //////////////////////////////////////////////////////////////////////////
     }
 }

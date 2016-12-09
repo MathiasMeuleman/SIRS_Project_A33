@@ -5,9 +5,6 @@ import java.sql.Time;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
-/**
- * Created by Alex Anders on 05/12/2016.
- */
 public class Executor {
     public static byte[] exeSocketChannelReceive
             (SocketChannel channel, long timeoutMilliseconds) throws SocketException,TimeoutException {
