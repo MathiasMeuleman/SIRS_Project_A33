@@ -27,7 +27,8 @@
 - <b>DHKeyAgreement</b> - Diffie-Hellman key exchange algorithm
 - <b>SecurityManager</b> - check timestamp for freshness 
 - <b>GatewaySecurity</b> - authenticate SHD and send IV (encrypted with AES-128b in ECB mode) for CBC encrypt/decrypt
-- <b>SHDSecurity</b> - authenticate GW 
+- <b>SHDSecurity</b> - authenticate GW
+- <b>Web Application + Authentication + SSL\TLS with Self-signed Certificate</b>
 
 ###GW (src/pt.ulisboa.ist.sirs.project.securesmarthome.gateway/):
 - <b>GW</b> will act as <b>server</b>, which will open a socket and wait for a connection
@@ -50,9 +51,9 @@ Rename it -> Name: SHD
 - The key agreement and authentication should be done before data is transmitted over the channel
 
 ###TEST GW <-> SHD using the jars (CMD - Windows machine):
-- Run GW.jar with apriori key of the light bulb:
+- Run GW.jar with apriori key of the light bulb: <br />
 > java -jar GW.jar ABCDEFGHIJKLMNOP
-- Run SHD.jar simulating a light bulb:
+- Run SHD.jar simulating a light bulb: <br />
 > java -jar SHD.jar lightBulb
 
 ###Web Application Module (webserver/):
