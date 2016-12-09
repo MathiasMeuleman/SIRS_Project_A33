@@ -1,12 +1,13 @@
 package pt.ulisboa.ist.sirs.project.securesmarthome;
 
 /**
- * Created by maxwell on 11/28/16.
+ * Created by Robert on 11/28/16.
  */
 
-import java.security.*;
-import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import java.security.Key;
 
 public class Cryptography {
 

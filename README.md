@@ -1,7 +1,40 @@
 # SIRS_Project_A33
-A33 Smart Home System Security project by some awesome guys
+##A33 Smart Home System Security Project <br />
+###Acronyms:
+- SHS - Smart Home System
+- SHD - Smart Home Device
+- GW - Gateway (contains a web server)
 
-###Web Application Module:
+###Security components (src/pt.ulisboa.ist.sirs.project.securesmarthome/):
+- <b>AESSecretKeyFactory</b> - provides AES-128b key
+- <b>Cryptography</b> - encrypt/decrypt with AES-128b in CBC/ECB mode
+- <b>DHKeyAgreement</b> - Diffie-Hellman key exchange algorithm
+- <b>SecurityManager</b> - check timestamp for freshness 
+- <b>GatewaySecurity</b> - authenticate SHD and send IV (encrypted with AES-128b in ECB mode) for CBC encrypt/decrypt
+- <b>SHDSecurity</b> - authenticate GW 
+
+
+###GW (src/pt.ulisboa.ist.sirs.project.securesmarthome.gateway/):
+- GW will act as server, which will open a socket and wait for a connection
+- Setup: Run > Edit configurations > (+)Add new configuration > Application > Main class: <br />
+pt.ulisboa.ist.sirs.project.securesmarthome.gateway.GatewayMain
+Set -> Program arguments: ABCDEFGHIJKLMNOP <br />
+Rename it -> Name: GW
+
+###SHD (src/pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice/):
+- SHD will act as client, which will connect to the GW socket start communication
+- Setup: Run > Edit configurations > (+)Add new configuration > Application > Main class: <br />
+pt.ulisboa.ist.sirs.project.securesmarthome.gateway.SHDMain <br />
+Set -> Program arguments: temperatureSensor <br />
+Rename it -> Name: SHD
+
+###TEST GW <-> SHD (having done the above setup for both the GW and SHD):
+- Run GW application (this will wait for a client - SHD to connect to it)
+- Run SHD application (will connect to the socket open by the gateway)
+- The key agreement and authentication should be done before data is transmitted over the channel
+
+
+###Web Application Module (webserver/):
 - [Install apache server](https://tomcat.apache.org/download-90.cgi) 
 - I got this one: 32-bit/64-bit Windows Service Installer
 - After install add it to Intellij: Settings > Application Servers (choose path where installed)
@@ -9,7 +42,7 @@ A33 Smart Home System Security project by some awesome guys
 - Fix artifacts: In the same window go to Deployment > (+)Press Add > Artifact... 
 - In Server window in On "Update" action > Update classes and resources
 
-###Authentication:
+###Authentication on Web Application:
 - Check authentication servlet class: <b>AuthServlet</b>
 - Configure\Copy <b>tomcat-users.xml</b> in: <br />
 C:\Program Files\Apache Software Foundation\Tomcat 9.0\tomcat-users.xml
@@ -28,3 +61,9 @@ Run > Edit configurations > Tomcat Server > Tomcat Server > Server: <br />
 -> HTTPs port: 8443
 - Run the server: Because it is a self-signed certificate it will say that is not secure. 
 Problem will be solved if the certificate is signed by a certified authority.
+
+###Firewall (firewall/):
+- <b>group33-firewall.fwb</b> has been created using <b>fwbuilder</b> in CentOS.
+- Contains rules for resolving <b>DoS attacks</b> such as: TCP SYN flooding, TCP "Christmass Tree" packets, IP Fragments packets.
+- Moreover, it has rules regarding remote access to the <b>GW</b> and <b>SHDs</b>.
+- The firewall is intended to be installed on the router in our <b>SHS</b>, meaning that it has not been tested.
