@@ -25,11 +25,12 @@ public class LightBulb {
         while (true)
         {
             try {
-                String command = security.receive().toString();
-                System.out.println("command received: " + command);
+                security.send((new String("Light status: ") + lightState.toString()).getBytes());
+                byte[] command;
+                command = security.receive();
+                System.out.println("Command received: " + new String(command));
                 toggleLight();
                 // acknowledge the process
-                security.send(lightState.toString().getBytes());
             } catch (SocketException e) {
                 e.printStackTrace();
             }
@@ -40,17 +41,19 @@ public class LightBulb {
     {
         if (lightState == LightState.ON)
             turnLightOff();
-        if (lightState == LightState.OFF)
+        else if (lightState == LightState.OFF)
             turnLightOn();
     }
 
     private void turnLightOff()
     {
+        System.out.println("Turn light off");
         lightState = LightState.OFF;
     }
 
     private void turnLightOn()
     {
+        System.out.println("Turn light on");
         lightState = LightState.ON;
     }
 
