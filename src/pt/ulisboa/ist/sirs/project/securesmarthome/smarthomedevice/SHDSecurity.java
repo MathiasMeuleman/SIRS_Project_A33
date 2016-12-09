@@ -53,7 +53,6 @@ public class SHDSecurity extends SecurityManager {
         receivePubKey();
         DHKeyAgreement.createSharedSecretA(publicGatewayKey);
         sessionKey = DHKeyAgreement.getSharedSecretKey();
-        System.out.println("Finished DH");
     }
 
     @Override

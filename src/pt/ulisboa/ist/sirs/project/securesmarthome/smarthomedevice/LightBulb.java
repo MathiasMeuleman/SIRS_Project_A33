@@ -34,7 +34,6 @@ public class LightBulb {
                 if(command != null) {
                     System.out.println("Command received: " + new String(command));
                     toggleLight();
-                    // acknowledge the process
                 }
             } catch (SocketException e) {
                 System.out.println("Connection was lost");
