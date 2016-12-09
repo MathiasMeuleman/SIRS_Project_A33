@@ -28,7 +28,7 @@
 - <b>SecurityManager</b> - check timestamp for freshness 
 - <b>GatewaySecurity</b> - authenticate SHD and send IV (encrypted with AES-128b in ECB mode) for CBC encrypt/decrypt
 - <b>SHDSecurity</b> - authenticate GW
-- <b>Web Application + Authentication + SSL\TLS with Self-signed Certificate</b>
+- <b>Web Application + Authentication + SSL\TLS with Self-signed Certificate</b> (in webserver/)
 
 ###GW (src/pt.ulisboa.ist.sirs.project.securesmarthome.gateway/):
 - <b>GW</b> will act as <b>server</b>, which will open a socket and wait for a connection
