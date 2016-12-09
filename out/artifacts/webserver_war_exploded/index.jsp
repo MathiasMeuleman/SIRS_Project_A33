@@ -27,8 +27,8 @@
           if(typeof(Storage) !== "undefined") {
               sessionStorage.dname = document.getElementById("dev_name").value;
               sessionStorage.dkey = document.getElementById("dev_key").value;
-              document.getElementById("device").innerHTML = "Device:" + sessionStorage.dname;
-              document.getElementById("key").innerHTML = "Key:" + sessionStorage.dkey;
+              document.getElementById("device").innerHTML = "Device: " + sessionStorage.dname;
+              document.getElementById("key").innerHTML = "Key: " + sessionStorage.dkey;
           } else {
               document.getElementById("error").innerHTML = "Browser does not support web storage...";
           }
