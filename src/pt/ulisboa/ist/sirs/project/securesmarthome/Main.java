@@ -3,10 +3,6 @@ import pt.ulisboa.ist.sirs.project.securesmarthome.gateway.Gateway;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.LightBulb;
 import pt.ulisboa.ist.sirs.project.securesmarthome.smarthomedevice.SHDSecurity;
 
-
-/**
- * Created by Alex Anders on 18/11/2016.
- */
 public class Main {
     public static void main(String[] args) throws Exception {
 
