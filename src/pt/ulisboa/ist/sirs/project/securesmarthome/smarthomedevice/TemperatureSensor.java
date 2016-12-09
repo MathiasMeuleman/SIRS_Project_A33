@@ -28,7 +28,7 @@ public class TemperatureSensor {
             //Simulate a temperature device :)
             int temp = 10;
             for (int i = 0; i <= 12; i++) {
-                String data = "" + temp;
+                String data = "Temperature sensor " + temp + "°C";
                 byte[] dataBytes = data.getBytes();
                 try {
                     security.send(dataBytes);
@@ -39,7 +39,7 @@ public class TemperatureSensor {
                 temp++;
             }
             for (int i = 0; i <= 12; i++) {
-                String data = "" + temp;
+                String data = "Temperature sensor " + temp + "°C";
                 byte[] dataBytes = data.getBytes();
                 try {
                     security.send(dataBytes);
