@@ -31,9 +31,11 @@ public class LightBulb {
                 security.send((new String("Light status: ") + lightState.toString()).getBytes());
                 byte[] command;
                 command = security.receive();
-                System.out.println("Command received: " + new String(command));
-                toggleLight();
-                // acknowledge the process
+                if(command != null) {
+                    System.out.println("Command received: " + new String(command));
+                    toggleLight();
+                    // acknowledge the process
+                }
             } catch (SocketException e) {
                 System.out.println("Connection was lost");
                 return;

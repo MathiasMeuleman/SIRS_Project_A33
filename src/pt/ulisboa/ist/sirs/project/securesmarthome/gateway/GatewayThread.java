@@ -33,7 +33,8 @@ public class GatewayThread extends Thread {
     public void collectData() throws SocketException {
             byte[] data;
             data = security.receive();
-            System.out.println("Received: " + new String(data));
+            if(data != null)
+                System.out.println("Received: " + new String(data));
     }
 
     public void sendCommands() throws SocketException {
